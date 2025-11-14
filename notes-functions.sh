@@ -1,0 +1,274 @@
+#!/bin/bash
+# Notes System Functions
+# Add these to your ~/.zshrc or ~/.bashrc
+
+export NOTES_DIR="$HOME/notes"
+
+# Core daily note functions
+
+today() {
+    local date=$(date +%Y-%m-%d)
+    local file="$NOTES_DIR/daily/$date.md"
+
+    if [ ! -f "$file" ]; then
+        # Create from template
+        sed "s/{{DATE}}/$date/g" "$NOTES_DIR/templates/daily.md" > "$file"
+
+        # Find last working day for carry-over
+        local current_day=$(date +%u)
+        local days_back=1
+
+        # If it's Monday, go back to Friday
+        if [ "$current_day" -eq 1 ]; then
+            days_back=3
+        fi
+
+        local last_workday=$(date -d "$days_back days ago" +%Y-%m-%d 2>/dev/null || date -v-${days_back}d +%Y-%m-%d 2>/dev/null)
+        local last_file="$NOTES_DIR/daily/$last_workday.md"
+
+        if [ -f "$last_file" ]; then
+            # Extract incomplete tasks and add to carried over section
+            local carried_tasks=$(grep "^- \[ \]" "$last_file" || true)
+            if [ -n "$carried_tasks" ]; then
+                # Insert carried tasks after the "## 📋 Carried Over" line
+                sed -i.bak "/^## 📋 Carried Over/a\\
+$carried_tasks" "$file"
+                rm "$file.bak"
+                echo "Carried over tasks from $last_workday"
+            fi
+        fi
+    fi
+
+    nvim "$file"
+}
+
+yesterday() {
+    local current_day=$(date +%u)  # 1=Monday, 7=Sunday
+    local days_back=1
+
+    # If it's Monday (1), go back to Friday (3 days)
+    if [ "$current_day" -eq 1 ]; then
+        days_back=3
+    # If it's Sunday (7), go back to Friday (2 days) - in case you run it on weekend
+    elif [ "$current_day" -eq 7 ]; then
+        days_back=2
+    fi
+
+    local date=$(date -d "$days_back days ago" +%Y-%m-%d 2>/dev/null || date -v-${days_back}d +%Y-%m-%d 2>/dev/null)
+    local file="$NOTES_DIR/daily/$date.md"
+
+    if [ -f "$file" ]; then
+        nvim "$file"
+    else
+        echo "No note found for $date (your last working day)"
+        echo "Run 'today' to create today's note"
+    fi
+}
+
+
+
+# Wiki and project management
+wiki() {
+    local name="$1"
+    if [ -z "$name" ]; then
+        echo "Usage: wiki <page-name>"
+        echo "Example: wiki python-testing"
+        return 1
+    fi
+
+    # Convert to slug format
+    local slug=$(echo "$name" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')
+    local file="$NOTES_DIR/wiki/$slug.md"
+
+    if [ ! -f "$file" ]; then
+        local title=$(echo "$name" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
+        local date=$(date +%Y-%m-%d)
+        sed -e "s/{{TITLE}}/$title/g" -e "s/{{DATE}}/$date/g" "$NOTES_DIR/templates/wiki.md" > "$file"
+    fi
+
+    nvim "$file"
+}
+
+project() {
+    local name="$1"
+    if [ -z "$name" ]; then
+        echo "Usage: project <project-name>"
+        return 1
+    fi
+
+    local slug=$(echo "$name" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')
+    local file="$NOTES_DIR/wiki/projects/$slug.md"
+
+    if [ ! -f "$file" ]; then
+        local title=$(echo "$name" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
+        local date=$(date +%Y-%m-%d)
+        sed -e "s/{{TITLE}}/$title/g" -e "s/{{DATE}}/$date/g" "$NOTES_DIR/templates/project.md" > "$file"
+    fi
+
+    nvim "$file"
+}
+
+# Quick capture to inbox
+inbox() {
+    nvim "$NOTES_DIR/inbox/inbox.md"
+}
+
+# Search functions
+nfind() {
+    if [ -z "$1" ]; then
+        # Interactive search with fzf/telescope (if available)
+        if command -v fzf &> /dev/null; then
+            local file=$(find "$NOTES_DIR" -type f -name "*.md" | fzf --preview 'cat {}')
+            [ -n "$file" ] && nvim "$file"
+        else
+            echo "Usage: nfind <search-term>"
+            echo "Or install fzf for interactive search"
+        fi
+    else
+        # Grep search
+        grep -r -n "$1" "$NOTES_DIR" --include="*.md" --color=always | less -R
+    fi
+}
+
+# Find notes by tag
+ntags() {
+    if [ -z "$1" ]; then
+        echo "Usage: ntags <tag>"
+        echo "Example: ntags project"
+        return 1
+    fi
+
+    grep -r -l "#$1" "$NOTES_DIR" --include="*.md"
+}
+
+# List all tags in use
+ntaglist() {
+    grep -r -h "#[a-zA-Z0-9_-]\+" "$NOTES_DIR" --include="*.md" -o | sort | uniq -c | sort -rn
+}
+
+# Recent notes
+nrecent() {
+    local count=${1:-10}
+    find "$NOTES_DIR" -type f -name "*.md" -printf "%T@ %p\n" | sort -rn | head -n "$count" | cut -d' ' -f2-
+}
+
+# View incomplete tasks across all notes
+ntasks() {
+    echo "=== Incomplete Tasks ==="
+    grep -r "^- \[ \]" "$NOTES_DIR/daily" --include="*.md" -H | sed "s|$NOTES_DIR/||g"
+}
+
+# View today's tasks specifically
+tasks-today() {
+    local date=$(date +%Y-%m-%d)
+    local file="$NOTES_DIR/daily/$date.md"
+
+    if [ -f "$file" ]; then
+        echo "=== Tasks for $date ==="
+        grep "^- \[ \]" "$file" || echo "No incomplete tasks!"
+    else
+        echo "No daily note for today yet. Run 'today' to create one."
+    fi
+}
+
+# Manually carry specific tasks to today
+carry-task() {
+    local date=$(date +%Y-%m-%d)
+    local file="$NOTES_DIR/daily/$date.md"
+
+    if [ ! -f "$file" ]; then
+        echo "Creating today's note first..."
+        today
+    fi
+
+    if [ -z "$1" ]; then
+        echo "Usage: carry-task '<task description>'"
+        echo "Example: carry-task 'Review PR for authentication'"
+        return 1
+    fi
+
+    # Add task to carried over section
+    sed -i.bak "/^## 📋 Carried Over/a\\
+- [ ] $1" "$file"
+    rm "$file.bak"
+    echo "Task added to today's carried over section"
+}
+
+# Weekly review - see all daily notes from the past week
+nweek() {
+    echo "=== Daily Notes from Past Week ==="
+    for i in {0..6}; do
+        local date=$(date -d "$i days ago" +%Y-%m-%d 2>/dev/null || date -v-${i}d +%Y-%m-%d 2>/dev/null)
+        local file="$NOTES_DIR/daily/$date.md"
+        if [ -f "$file" ]; then
+            echo ""
+            echo "--- $date ---"
+            # Show primary focus and completed tasks
+            sed -n '/^## 🎯 Primary Focus/,/^## /p' "$file" | head -n -1
+            echo ""
+            grep "^- \[x\]" "$file" 2>/dev/null && echo "" || echo "(no completed tasks)"
+        fi
+    done
+}
+
+# Helper for context switching - show what you were working on
+context() {
+    local date=$(date +%Y-%m-%d)
+    local file="$NOTES_DIR/daily/$date.md"
+
+    if [ -f "$file" ]; then
+        echo "=== Today's Context ==="
+        echo ""
+        echo "📍 PRIMARY FOCUS:"
+        sed -n '/^## 🎯 Primary Focus/,/^## /p' "$file" | grep -v "^#" | grep -v "^$" | head -n 5
+        echo ""
+        echo "📋 ACTIVE TASKS:"
+        grep "^- \[ \]" "$file" | head -n 5 || echo "No incomplete tasks"
+        echo ""
+        echo "🔗 CURRENT LINKS:"
+        sed -n '/^## 🔗 Links/,/^## /p' "$file" | grep -v "^#" | grep -v "^$" || echo "No links yet"
+    else
+        echo "No daily note for today. Run 'today' to create one."
+    fi
+}
+
+# Quick note append without opening editor
+note-quick() {
+    if [ -z "$1" ]; then
+        echo "Usage: note-quick '<your note>'"
+        return 1
+    fi
+
+    local date=$(date +%Y-%m-%d)
+    local time=$(date +%H:%M)
+    local file="$NOTES_DIR/daily/$date.md"
+
+    if [ ! -f "$file" ]; then
+        today
+    fi
+
+    # Append to notes section
+    echo "- [$time] $1" >> "$file"
+    echo "Note added to today's log"
+}
+
+# Aliases for convenience
+alias n='nfind'
+alias nt='ntasks'
+alias tt='tasks-today'
+alias nw='nweek'
+alias cx='context'
+alias nq='note-quick'
+
+echo "Notes functions loaded. Key commands:"
+echo "       today         - Open today's daily note (auto-carries tasks)"
+echo "       yesterday     - Open yesterday's note"
+echo "       wiki <name>   - Create/open wiki page"
+echo "       project <n>   - Create/open project"
+echo "       inbox         - Quick capture"
+echo "  (cx) context       - Show today's focus and active tasks"
+echo "  (nt) ntasks        - View all incomplete tasks"
+echo "  (nf) nfind <term>  - Search notes"
+echo "  (nw) nweek         - Review past week"
+echo "  (nq) note-quick    - Append quick note to today's log"
+echo

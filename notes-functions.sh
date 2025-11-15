@@ -25,8 +25,10 @@ today() {
             if [ -n "$carried_tasks" ]; then
                 tmpfile=$(mktemp)
                 tmpout=$(mktemp)
+                echo "$carried_tasks" > "$tmpfile"
                 # Insert carried tasks after the "## 📋 Carried Over" line
                 sed "/^## 📋 Carried Over/r $tmpfile" "$file" > "$tmpout"
+                mv "$tmpout" "$file"
                 rm -f "$tmpfile"
                 rm -f "$tmpout"
             fi

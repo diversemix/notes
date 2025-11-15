@@ -37,29 +37,15 @@ today() {
 }
 
 yesterday() {
-    local current_day=$(date +%u)  # 1=Monday, 7=Sunday
-    local days_back=1
-
-    # If it's Monday (1), go back to Friday (3 days)
-    if [ "$current_day" -eq 1 ]; then
-        days_back=3
-    # If it's Sunday (7), go back to Friday (2 days) - in case you run it on weekend
-    elif [ "$current_day" -eq 7 ]; then
-        days_back=2
-    fi
-
-    local date=$(date -d "$days_back days ago" +%Y-%m-%d 2>/dev/null || date -v-${days_back}d +%Y-%m-%d 2>/dev/null)
+    local date=$(date -d "yesterday" +%Y-%m-%d 2>/dev/null || date -v-1d +%Y-%m-%d 2>/dev/null)
     local file="$NOTES_DIR/daily/$date.md"
-
+    
     if [ -f "$file" ]; then
         nvim "$file"
     else
-        echo "No note found for $date (your last working day)"
-        echo "Run 'today' to create today's note"
+        echo "No note found for yesterday ($date)"
     fi
 }
-
-
 
 # Wiki and project management
 wiki() {
@@ -143,6 +129,11 @@ project() {
     nvim "$file"
 }
 
+# Quick capture to inbox
+inbox() {
+    nvim "$NOTES_DIR/inbox/inbox.md"
+}
+
 # Search functions
 nfind() {
     if [ -z "$1" ]; then
@@ -185,7 +176,7 @@ nrecent() {
 # View incomplete tasks across all notes
 ntasks() {
     echo "=== Incomplete Tasks ==="
-    grep -r "^- \[ \]" "$NOTES_DIR/daily" --include="*.md" -H | sed "s|$NOTES_DIR/||g"
+    grep -r "^- \[ \]" "$NOTES_DIR" --include="*.md" -H | sed "s|$NOTES_DIR/||g"
 }
 
 # View today's tasks specifically
@@ -293,6 +284,7 @@ alias nq='nquick'
 echo "Notes functions loaded. Key commands:"
 echo "       today         - Open today's daily note (auto-carries tasks)"
 echo "       yesterday     - Open yesterday's note"
+echo "       inbox         - Quick capture"
 echo "       wiki <name>   - Create/open wiki page (specific topic)"
 echo "       project <n>   - Create/open project (time bounded)"
 echo "       area <n>      - Create/open area (time unbounded)"

@@ -14,27 +14,21 @@ today() {
         # Create from template
         sed "s/{{DATE}}/$date/g" "$NOTES_DIR/templates/daily.md" > "$file"
 
-        # Find last working day for carry-over
-        local current_day=$(date +%u)
-        local days_back=1
+        # Carry over incomplete tasks from yesterday
+        local yesterday_date=$(date -d "yesterday" +%Y-%m-%d 2>/dev/null || date -v-1d +%Y-%m-%d 2>/dev/null)
+        local yesterday_file="$NOTES_DIR/daily/$yesterday_date.md"
 
-        # If it's Monday, go back to Friday
-        if [ "$current_day" -eq 1 ]; then
-            days_back=3
-        fi
-
-        local last_workday=$(date -d "$days_back days ago" +%Y-%m-%d 2>/dev/null || date -v-${days_back}d +%Y-%m-%d 2>/dev/null)
-        local last_file="$NOTES_DIR/daily/$last_workday.md"
-
-        if [ -f "$last_file" ]; then
+        if [ -f "$yesterday_file" ]; then
             # Extract incomplete tasks and add to carried over section
-            local carried_tasks=$(grep "^- \[ \]" "$last_file" || true)
+            local carried_tasks=$(grep "^- \[ \]" "$yesterday_file" || true)
+
             if [ -n "$carried_tasks" ]; then
+                tmpfile=$(mktemp)
+                tmpout=$(mktemp)
                 # Insert carried tasks after the "## 📋 Carried Over" line
-                sed -i.bak "/^## 📋 Carried Over/a\\
-$carried_tasks" "$file"
-                rm "$file.bak"
-                echo "Carried over tasks from $last_workday"
+                sed "/^## 📋 Carried Over/r $tmpfile" "$file" > "$tmpout"
+                rm -f "$tmpfile"
+                rm -f "$tmpout"
             fi
         fi
     fi
@@ -89,6 +83,47 @@ wiki() {
     nvim "$file"
 }
 
+
+area() {
+    local name="$1"
+    if [ -z "$name" ]; then
+        echo "Usage: area <area-name>"
+        return 1
+    fi
+
+    local slug=$(echo "$name" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')
+    local file="$NOTES_DIR/wiki/areas/$slug.md"
+
+    if [ ! -f "$file" ]; then
+        local title=$(echo "$name" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
+        local date=$(date +%Y-%m-%d)
+        sed -e "s/{{TITLE}}/$title/g" -e "s/{{DATE}}/$date/g" "$NOTES_DIR/templates/area.md" > "$file"
+    fi
+
+    nvim "$file"
+}
+
+
+resource() {
+    local name="$1"
+    if [ -z "$name" ]; then
+        echo "Usage: resource <resource-name>"
+        return 1
+    fi
+
+    local slug=$(echo "$name" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')
+    local file="$NOTES_DIR/wiki/resources/$slug.md"
+
+    if [ ! -f "$file" ]; then
+        local title=$(echo "$name" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
+        local date=$(date +%Y-%m-%d)
+        sed -e "s/{{TITLE}}/$title/g" -e "s/{{DATE}}/$date/g" "$NOTES_DIR/templates/resource.md" > "$file"
+    fi
+
+    nvim "$file"
+}
+
+
 project() {
     local name="$1"
     if [ -z "$name" ]; then
@@ -106,11 +141,6 @@ project() {
     fi
 
     nvim "$file"
-}
-
-# Quick capture to inbox
-inbox() {
-    nvim "$NOTES_DIR/inbox/inbox.md"
 }
 
 # Search functions
@@ -233,7 +263,7 @@ context() {
 }
 
 # Quick note append without opening editor
-note-quick() {
+nquick() {
     if [ -z "$1" ]; then
         echo "Usage: note-quick '<your note>'"
         return 1
@@ -258,17 +288,18 @@ alias nt='ntasks'
 alias tt='tasks-today'
 alias nw='nweek'
 alias cx='context'
-alias nq='note-quick'
+alias nq='nquick'
 
 echo "Notes functions loaded. Key commands:"
 echo "       today         - Open today's daily note (auto-carries tasks)"
 echo "       yesterday     - Open yesterday's note"
-echo "       wiki <name>   - Create/open wiki page"
-echo "       project <n>   - Create/open project"
-echo "       inbox         - Quick capture"
+echo "       wiki <name>   - Create/open wiki page (specific topic)"
+echo "       project <n>   - Create/open project (time bounded)"
+echo "       area <n>      - Create/open area (time unbounded)"
+echo "       resource <n>  - Create/open resource (reference material)"
 echo "  (cx) context       - Show today's focus and active tasks"
 echo "  (nt) ntasks        - View all incomplete tasks"
 echo "  (nf) nfind <term>  - Search notes"
 echo "  (nw) nweek         - Review past week"
-echo "  (nq) note-quick    - Append quick note to today's log"
+echo "  (nq) nquick        - Append quick note to today's log"
 echo

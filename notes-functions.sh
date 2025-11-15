@@ -131,11 +131,6 @@ project() {
     nvim "$file"
 }
 
-# Quick capture to inbox
-inbox() {
-    nvim "$NOTES_DIR/inbox/inbox.md"
-}
-
 # Search functions
 nfind() {
     if [ -z "$1" ]; then
@@ -149,7 +144,7 @@ nfind() {
         fi
     else
         # Grep search
-        grep -r -n "$1" "$NOTES_DIR" --include="*.md" --color=always | less -R
+        grep -r -n "$1" "$NOTES_DIR" --include="*.md" --color=always 
     fi
 }
 
@@ -252,6 +247,29 @@ context() {
         sed -n '/^## 🔗 Links/,/^## /p' "$file" | grep -v "^#" | grep -v "^$" || echo "No links yet"
     else
         echo "No daily note for today. Run 'today' to create one."
+    fi
+}
+
+# Quick capture to inbox
+inbox() {
+    # If there is no inbox file then copy one from template
+    local file="$NOTES_DIR/inbox/inbox.md"
+
+    if [ ! -f "$file" ]; then
+        cp "$NOTES_DIR/templates/inbox.md" "$file"
+    fi
+
+    local date=$(date '+%a, %d %b')
+    local time=$(date +%H:%M)
+
+    # Append to notes section
+    echo -n "- $date [$time] " >> "$file"
+
+    if [ -z "$1" ]; then
+        nvim +"normal! GA" +startinsert! "$NOTES_DIR/inbox/inbox.md"
+    else
+        echo "$1" >> "$file"
+        echo "Note added to inbox"
     fi
 }
 

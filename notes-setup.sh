@@ -143,12 +143,6 @@ EOF
 cat > "$NOTES_DIR/templates/inbox.md" << 'EOF'
 # Inbox
 
-<!-- Quick capture for ideas, tasks, and notes that need processing -->
-
-## To Process
-
----
-Last updated: {{DATE}}
 EOF
 
 echo "Created templates"

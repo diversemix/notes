@@ -1,6 +1,6 @@
-# Notes System Installation for Kickstart.nvim Users
+# Installation
 
-Since you're already using kickstart.nvim, you have Telescope and fzf installed! This makes setup even simpler.
+This guide covers complete installation for users with kickstart.nvim. Since you already have Telescope and fzf installed, setup is straightforward.
 
 ## Quick Installation
 
@@ -55,7 +55,7 @@ Since you already have Telescope, fzf, and ripgrep, the notes system will use th
 - **Tag searching**: `<leader>nt` finds notes by tag using Telescope
 - **Task overview**: `<leader>na` shows all incomplete tasks across all notes
 
-## Keybindings (with Kickstart)
+## Keybindings
 
 Your leader key is already set to Space in kickstart. Here are your notes keybindings:
 
@@ -72,6 +72,7 @@ Your leader key is already set to Space in kickstart. Here are your notes keybin
 | `<Space>na` | All tasks | All incomplete tasks (Telescope) |
 
 In markdown files only:
+
 | Key | Action |
 |-----|--------|
 | `<Enter>` | Follow [[link]] under cursor |
@@ -92,8 +93,7 @@ wiki <name>     # Create/open wiki page
 project <name>  # Create/open project
 
 # Quick capture
-inbox           # Open inbox for captures
-note-quick "text"  # Quick note to today without opening editor
+nquick "text"  # Quick note to today without opening editor
 
 # Search and review
 nfind [term]    # Search notes (with fzf if no term)
@@ -104,7 +104,7 @@ context         # Show current work context
 nweek           # Review past week
 ```
 
-## Customization for Kickstart
+## Customization
 
 ### Adjust Keybindings
 
@@ -207,7 +207,8 @@ today
 
 ## Troubleshooting
 
-**Notes keybindings don't work:**
+### Notes keybindings don't work
+
 ```vim
 # In Neovim
 :messages
@@ -217,7 +218,8 @@ today
 :lua print(vim.inspect(require('notes').config))
 ```
 
-**Yesterday doesn't work on Monday:**
+### Yesterday doesn't work on Monday
+
 ```bash
 # Check if the improved function is loaded
 type yesterday
@@ -227,7 +229,8 @@ type yesterday
 source ~/.zshrc
 ```
 
-**Telescope not previewing markdown:**
+### Telescope not previewing markdown
+
 Kickstart should handle this, but if not:
 ```lua
 -- In your kickstart config, ensure:
@@ -244,6 +247,6 @@ require('telescope').setup {
 2. Use `context` frequently (make it muscle memory)
 3. After a week, add wiki pages with `wiki <topic>`
 4. Explore Telescope search with `<Space>ng`
-5. Read the workflow guide for executive function strategies
+5. Read the [User Guide](user-guide.md) for executive function strategies
 
 Your kickstart.nvim setup already has all the powerful search capabilities - the notes system just integrates with them seamlessly!

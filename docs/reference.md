@@ -1,4 +1,6 @@
-# Notes System Quick Reference
+# Quick Reference
+
+A comprehensive reference for all commands, keybindings, and workflows.
 
 ## Essential Daily Commands
 
@@ -16,6 +18,12 @@ wiki <name>     # Create/open wiki page
 
 project <name>  # Create/open project
                 # Example: project auth-refactor
+
+area <name>     # Create/open area
+                # Example: area backend-development
+
+resource <name> # Create/open resource
+                # Example: resource jwt-guide
 ```
 
 ## Finding Things
@@ -33,12 +41,17 @@ tasks-today     # Show just today's tasks
 
 ## Task Management
 
-```bash
-# In shell:
-note-quick "task description"    # Add task to today without opening editor
-carry-task "task description"    # Manually add task to today's carried-over section
+### In Shell
 
-# In Neovim (on a task line):
+```bash
+nquick "task description"       # Add note to today without opening editor
+carry-task "task description"   # Manually add task to today's carried-over section
+```
+
+### In Neovim
+
+On a task line:
+```
 <leader>nx      # Toggle checkbox [ ] ↔ [x]
 ```
 
@@ -53,27 +66,54 @@ nrecent 20      # Show 20 most recently modified notes
 
 ## Neovim Keybindings
 
-| Key | Action |
-|-----|--------|
-| `<CR>` | Follow [[link]] under cursor |
-| `<leader>nf` | Find notes |
-| `<leader>ng` | Grep all notes |
-| `<leader>nl` | Insert link |
-| `<leader>nb` | Show backlinks |
-| `<leader>nx` | Toggle checkbox |
+### Navigation
+
+| Key | Action | Description |
+|-----|--------|-------------|
+| `<Enter>` | Follow link | Follow [[link]] under cursor |
+| `<Ctrl>]` | Follow link | Also follows [[link]] (vim-style) |
+| `<Ctrl>O` | Go back | Return to previous location |
+
+### Notes Commands
+
+| Key | Action | Description |
+|-----|--------|-------------|
+| `<leader>nf` | Find notes | Telescope fuzzy finder for notes |
+| `<leader>ng` | Grep notes | Live search through all notes |
+| `<leader>nt` | Find by tag | Search notes by #tag |
+| `<leader>nl` | Insert link | Pick a note and insert [[link]] |
+| `<leader>nb` | Backlinks | Show what links to current note |
+| `<leader>nn` | New note | Create a new wiki note |
+| `<leader>nx` | Toggle checkbox | Toggle task [ ] ↔ [x] |
+| `<leader>ns` | Show tasks | Tasks in current note (quickfix) |
+| `<leader>na` | All tasks | All incomplete tasks (Telescope) |
+
+### Ex Commands
+
+```vim
+:NotesFind      # Find notes
+:NotesGrep      # Grep through notes
+:NotesBacklinks # Show backlinks
+```
 
 ## Link Syntax
 
 ```markdown
-[[page-name]]           # Link to wiki page
-#tag                    # Tag
-- [ ] task              # Uncompleted task
-- [x] task              # Completed task
+[[page-name]]                # Link to wiki/page-name.md
+[[wiki/projects/name]]       # Link to wiki/projects/name.md
+[[wiki/areas/name]]          # Link to wiki/areas/name.md
+[[wiki/resources/name]]      # Link to wiki/resources/name.md
+[[daily/2025-11-14]]         # Link to daily/2025-11-14.md
+
+#tag                         # Tag
+- [ ] task                   # Uncompleted task
+- [x] task                   # Completed task
 ```
 
 ## Typical Daily Flow
 
 ### Morning (5 min)
+
 ```bash
 today                   # Opens today's note with carried-over tasks
 # Set your Primary Focus (edit the note)
@@ -81,20 +121,23 @@ today                   # Opens today's note with carried-over tasks
 ```
 
 ### During Work
+
 ```bash
 context                 # When you need to remember what you're doing
-note-quick "note"       # Quick capture
+nquick "note"          # Quick capture
 inbox                   # Longer captures
 ```
 
 ### When Interrupted
+
 ```bash
-note-quick "Paused at: [what you were doing]"
+nquick "Paused at: [what you were doing]"
 # Handle interruption
 context                 # Resume work
 ```
 
 ### End of Day (5 min)
+
 ```bash
 today                   # Open today's note
 # Mark completed tasks: [ ] → [x]
@@ -114,13 +157,15 @@ nrecent                 # Check recent files
 ## Common Workflows
 
 ### Start a New Project
+
 ```bash
 project my-new-project
 # Fill in objective, next actions
-# Link from today's note: [[my-new-project]]
+# Link from today's note: [[wiki/projects/my-new-project]]
 ```
 
 ### Research a Topic
+
 ```bash
 wiki topic-name
 # Take notes, add links
@@ -128,12 +173,33 @@ wiki topic-name
 ```
 
 ### Weekly Review
+
 ```bash
 nweek                   # See the week
 # Review patterns
 # Update projects
 # Plan next week in today's note
 ```
+
+## File Locations
+
+```
+~/notes/
+├── daily/              # Your daily notes (YYYY-MM-DD.md)
+├── wiki/               # Your wiki pages
+│   ├── projects/       # Active projects
+│   ├── areas/          # Ongoing responsibilities
+│   └── resources/      # Reference material
+├── inbox/              # Quick captures
+└── templates/          # Edit to customize
+```
+
+## Template Variables
+
+When creating notes, these variables are replaced:
+
+- `{{TITLE}}` - Note title (from filename)
+- `{{DATE}}` - Current date (YYYY-MM-DD)
 
 ## Pro Tips
 
@@ -153,40 +219,57 @@ nweek                   # See the week
 
 ## Troubleshooting Quick Fixes
 
+### Command not found
+
 ```bash
-# Command not found
 source ~/.zshrc         # or ~/.bashrc
+```
 
-# See what functions are loaded
+### See what functions are loaded
+
+```bash
 type today              # Should show the function
-
-# Neovim keybindings not working
-:messages               # Check for errors in Neovim
-
-# Tasks not carrying over
-# Make sure format is: - [ ] task (with space in brackets)
 ```
 
-## File Locations
+### Neovim keybindings not working
 
-```
-~/notes/daily/          # Your daily notes
-~/notes/wiki/           # Your wiki pages
-~/notes/inbox/          # Quick captures
-~/notes/templates/      # Edit to customize
+```vim
+# In Neovim
+:messages               # Check for errors
+
+# Check if notes loaded
+:lua print(vim.inspect(require('notes').config))
 ```
 
-## Getting Help
+### Tasks not carrying over
+
+Make sure format is: `- [ ] task` (with space in brackets)
+
+### Show usage for commands
 
 ```bash
 # Most commands show usage without args
 wiki
 project
 nfind
+```
 
-# In Neovim
-:NotesFind
-:NotesGrep
+## Shell Aliases
+
+Recommended short aliases to add to your shell:
+
+```bash
+alias nq="nquick"       # Quick note
+alias tt="tasks-today"  # Today's tasks
+```
+
+## Environment Variables
+
+Customize by setting in your shell profile:
+
+```bash
+export NOTES_DIR="$HOME/notes"          # Notes directory location
+export EDITOR="nvim"                     # Editor for opening notes
 ```
 
 ## Remember

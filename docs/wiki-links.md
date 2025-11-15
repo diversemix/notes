@@ -1,10 +1,13 @@
-# Wiki Links Guide
+# Wiki Links
+
+Learn how to use wiki-style links to connect your notes and build an interconnected knowledge base.
 
 ## How Links Work
 
-The notes system supports two types of wiki links:
+The notes system supports wiki links in markdown files:
 
 ### 1. Simple Links (Wiki Root)
+
 For pages in the main `wiki/` directory:
 
 ```markdown
@@ -14,6 +17,7 @@ For pages in the main `wiki/` directory:
 This resolves to: `~/notes/wiki/my-page.md`
 
 ### 2. Path-Based Links (Subdirectories)
+
 For pages in subdirectories like `projects/`, `areas/`, or `resources/`:
 
 ```markdown
@@ -27,6 +31,7 @@ These resolve relative to your notes directory:
 - `[[wiki/areas/backend-development]]` → `~/notes/wiki/areas/backend-development.md`
 
 ### 3. Daily Notes Links
+
 Link to specific daily notes:
 
 ```markdown
@@ -35,20 +40,7 @@ Link to specific daily notes:
 
 This resolves to: `~/notes/daily/2025-11-14.md`
 
-## Using `<leader>nl` to Insert Links
-
-When you use `<leader>nl` to insert a link:
-
-1. Telescope shows all `.md` files in your notes directory
-2. Select any file (even in subdirectories)
-3. The link is inserted with the **full relative path**
-
-**Example:**
-- You select `wiki/projects/auth-refactor.md`
-- Link inserted: `[[wiki/projects/auth-refactor]]`
-- Pressing Enter on this link opens the correct file
-
-## Creating New Links
+## Creating Links
 
 ### Option 1: Type the Link Manually
 
@@ -65,11 +57,83 @@ When you press Enter on it:
 
 ### Option 2: Use Insert Link Command
 
-Press `<leader>nl` and select from existing files.
+Press `<leader>nl` in Neovim:
+
+1. Telescope shows all `.md` files in your notes directory
+2. Select any file (even in subdirectories)
+3. The link is inserted with the **full relative path**
+
+**Example:**
+- You select `wiki/projects/auth-refactor.md`
+- Link inserted: `[[wiki/projects/auth-refactor]]`
+- Pressing Enter on this link opens the correct file
+
+## Following Links
+
+### In Normal Mode
+
+- **Press Enter** on a `[[link]]` to follow it
+- **Press Ctrl+]** also follows links (vim-style)
+- **Press Ctrl+O** to go back (vim's jump list)
+
+### Backlinks
+
+To see what pages link to your current page:
+
+```vim
+<leader>nb
+```
+
+This opens Telescope showing all files that contain a link to the current page.
+
+## Wiki Structure and Information Hierarchy
+
+Understanding how different types of notes relate helps organize your knowledge:
+
+```
+Daily Note
+    ↓
+Links to: Project (what you're building)
+    ↓
+Links to: Area (what domain it's in)
+    ↓
+References: Resources (how to do it)
+```
+
+### Example Hierarchy
+
+```markdown
+// Daily Note (2025-11-14)
+Working on [[wiki/projects/auth-refactor]]
+
+// Project (wiki/projects/auth-refactor.md)
+**Area:** [[wiki/areas/security]]
+**Resources:** [[wiki/resources/jwt-best-practices]]
+
+// Area (wiki/areas/security.md)
+Current projects: [[wiki/projects/auth-refactor]]
+Standards: [[wiki/resources/security-checklist]]
+
+// Resource (wiki/resources/jwt-best-practices.md)
+Used in: [[wiki/projects/auth-refactor]]
+```
+
+### Information Flow
+
+```
+Resources (reference material)
+    ↑
+Areas (ongoing responsibilities)
+    ↑
+Projects (active work)
+    ↑
+Daily notes (today's tasks)
+```
 
 ## Link Patterns
 
 ### In Daily Notes
+
 ```markdown
 # 2025-11-14
 
@@ -86,11 +150,12 @@ Working on [[wiki/projects/user-authentication]]
 ```
 
 ### In Project Files
+
 ```markdown
 # User Authentication Project
 
 ## Overview
-This project implements JWT-based auth as described in 
+This project implements JWT-based auth as described in
 [[wiki/resources/jwt-implementation-guide]].
 
 ## Related Projects
@@ -103,6 +168,7 @@ This project implements JWT-based auth as described in
 ```
 
 ### In Wiki Pages
+
 ```markdown
 # FastAPI Security Best Practices
 
@@ -112,46 +178,11 @@ This project implements JWT-based auth as described in
 - Daily notes: [[daily/2025-11-08]]
 ```
 
-## Following Links
-
-### In Normal Mode
-- **Press Enter** on a `[[link]]` to follow it
-- **Press Ctrl+]** also follows links (vim-style)
-- **Press Ctrl+O** to go back (vim's jump list)
-
-### Link Navigation Tips
-
-Create a "hub" pattern for related information:
-
-```markdown
-# User Authentication (Hub)
-
-## Active Work
-- [[wiki/projects/auth-refactor]] - Current refactoring effort
-- [[daily/2025-11-14]] - Today's auth work
-
-## Reference
-- [[wiki/resources/jwt-best-practices]]
-- [[wiki/resources/oauth2-flow]]
-
-## Related Areas
-- [[wiki/areas/security]]
-- [[wiki/areas/api-development]]
-```
-
-## Backlinks
-
-To see what pages link to your current page:
-
-```vim
-<leader>nb
-```
-
-This opens Telescope showing all files that contain a link to the current page.
-
 ## Link Organization Strategy
 
-### Use Paths for Structure
+### Directory Structure
+
+Use paths to create structure:
 
 ```
 wiki/
@@ -166,7 +197,7 @@ wiki/
     └── sql-optimization.md
 ```
 
-### Link Between Categories
+### Cross-Linking Between Categories
 
 **From Daily Note:**
 ```markdown
@@ -188,9 +219,10 @@ Used in: [[wiki/projects/auth-refactor]], [[wiki/projects/api-v2]]
 Related: [[wiki/resources/oauth2-flow]]
 ```
 
-## Common Link Patterns
+## Common Link Templates
 
 ### Project Template with Links
+
 ```markdown
 # {{TITLE}}
 
@@ -202,7 +234,7 @@ Related: [[wiki/resources/oauth2-flow]]
 ## Objective
 
 ## Next Actions
-- [ ] 
+- [ ]
 
 ## Context
 See: [[wiki/resources/REFERENCE]]
@@ -217,6 +249,7 @@ Tags: #project
 ```
 
 ### Daily Note with Project Links
+
 ```markdown
 # 2025-11-14
 
@@ -232,50 +265,84 @@ Tags: #project
 - [[wiki/projects/auth-refactor]]
 ```
 
-## Tips
+### Hub Pattern for Related Information
+
+Create "hub" pages for related topics:
+
+```markdown
+# User Authentication (Hub)
+
+## Active Work
+- [[wiki/projects/auth-refactor]] - Current refactoring effort
+- [[daily/2025-11-14]] - Today's auth work
+
+## Reference
+- [[wiki/resources/jwt-best-practices]]
+- [[wiki/resources/oauth2-flow]]
+
+## Related Areas
+- [[wiki/areas/security]]
+- [[wiki/areas/api-development]]
+```
+
+## Link Discovery with Telescope
+
+Use Telescope to navigate and discover connections:
+
+- `<leader>nf` - Find any note quickly
+- `<leader>ng` - Search content across all notes
+- `<leader>nb` - Find what links here
+
+## Tips for Effective Linking
 
 ### 1. Use Consistent Naming
+
 - Lowercase, dash-separated: `user-authentication`, not `User Authentication`
 - This matches the automatic slug generation
 
 ### 2. Link Early, Link Often
+
 Don't wait to create perfect structure. Create links as you work:
 ```markdown
 Investigating [[wiki/resources/sqlalchemy-patterns]]
 (link doesn't exist yet - will be created when needed)
 ```
 
-### 3. Use Telescope for Discovery
-- `<leader>nf` - Find any note quickly
-- `<leader>ng` - Search content across all notes
-- `<leader>nb` - Find what links here
+### 3. Daily → Project → Resource Flow
 
-### 4. Daily → Project → Resource Flow
 Typical pattern:
 1. Work in daily note: `[[wiki/projects/my-project]]`
 2. Project references: `[[wiki/resources/how-to-guide]]`
 3. Resource links back: "Used in [[wiki/projects/my-project]]"
 
-### 5. Check Broken Links
-If a link doesn't work:
-- Check the path is correct (includes `wiki/projects/` not just the name)
-- Press Enter to create it if it's missing
-- Use `<leader>nl` to verify the correct path
+### 4. Trust the Search
+
+Use tags liberally and search with `nfind`. Trust the search, not your memory.
 
 ## Troubleshooting
 
-**Link doesn't open:**
+### Link doesn't open
+
 - Check the path: `[[wiki/projects/name]]` not `[[projects/name]]`
 - Make sure there's no typo in the filename
 - The file might be in a different directory - use `<leader>nf` to find it
 
-**Wrong file opens:**
+### Wrong file opens
+
 - You might have two files with similar names in different directories
 - Use full paths to be explicit: `[[wiki/projects/auth]]` vs `[[wiki/areas/auth]]`
 
-**Link created in wrong location:**
+### Link created in wrong location
+
 - If you manually type `[[new-page]]`, it goes to `wiki/`
 - For subdirectories, include the path: `[[wiki/projects/new-page]]`
+
+### Check Broken Links
+
+If a link doesn't work:
+- Check the path is correct
+- Press Enter to create it if it's missing
+- Use `<leader>nl` to verify the correct path
 
 ## Quick Reference
 
@@ -294,3 +361,7 @@ If a link doesn't work:
 <Ctrl+]>                         # Also follows link
 <Ctrl+O>                         # Go back (vim jumplist)
 ```
+
+---
+
+Links turn your notes into a knowledge graph. Start simple and let the structure emerge naturally as you work.

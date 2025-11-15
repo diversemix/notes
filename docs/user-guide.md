@@ -1,8 +1,11 @@
-# Notes System Workflow Guide
+# User Guide
+
+This guide covers daily workflows and executive function support strategies.
 
 ## Executive Function Support Strategies
 
 This system is designed to help with:
+
 - **Context switching**: Quick commands to see what you're working on
 - **Task continuity**: Automatic task carry-over between days
 - **Reduced friction**: Templates and automation minimize decision fatigue
@@ -24,7 +27,7 @@ today
 
 ### During the Day
 
-#### When starting work or after a break:
+#### When starting work or after a break
 
 ```bash
 # Quick context reminder without opening files
@@ -38,23 +41,20 @@ This shows:
 
 **Why this helps**: Eliminates the "what was I doing?" moment after interruptions. You don't need to search through notes or hold context in memory.
 
-#### Quick capture (when something comes up):
+#### Quick capture (when something comes up)
 
 ```bash
 # Add a note without opening editor
-note-quick "idea for improving the auth flow"
-
-# OR open inbox for longer captures
-inbox
+nquick "idea for improving the auth flow"
 ```
 
 **Why this helps**: Capture thoughts immediately without losing focus. Process them later during a dedicated time.
 
-#### When switching tasks:
+#### When switching tasks
 
 1. Check off completed task in today's note: Open with `today` and toggle with `<leader>nx` in Neovim (or manually change `[ ]` to `[x]`)
 2. Run `context` to see what's next
-3. Add a quick note about what you were doing: `note-quick "Paused at: writing tests for user auth"`
+3. Add a quick note about what you were doing: `nquick "Paused at: writing tests for user auth"`
 
 **Why this helps**: Creates breadcrumbs for yourself. When you return, you know exactly where you left off.
 
@@ -88,7 +88,7 @@ nweek
 
 ### The Three States of Tasks
 
-1. **Inbox** (`inbox`): Unprocessed captures
+1. **Daily Thoughts**: Recorded at the top of daily notes
 2. **Today's Tasks** (in daily note): What you're doing today
 3. **Project Tasks** (in project files): Tracked by project, pulled into daily as needed
 
@@ -153,7 +153,7 @@ ntags project
 
 1. Before handling interruption:
    ```bash
-   note-quick "Paused: implementing user validation, next: add email check"
+   nquick "Paused: implementing user validation, next: add email check"
    ```
 
 2. Handle the interruption
@@ -180,6 +180,7 @@ cd() {
 ### Scenario: End of day, brain is tired
 
 Don't worry about perfect task management. Just:
+
 1. Run `today`
 2. Check off what you did
 3. Delete what's irrelevant
@@ -239,19 +240,87 @@ When you return to a project after days/weeks, this tells you exactly where you 
 5. **Context on demand**: Run `context` whenever you need orientation
 6. **Regular checkpoints**: Daily reflections and weekly reviews keep you calibrated
 
-## Troubleshooting
+## Common Workflows
 
-**"I open my daily note and feel overwhelmed by carried-over tasks"**
-→ This means tasks are too big or too numerous. Archive to a project file or delete.
+### Start a New Project
 
-**"I forget to check my notes"**
-→ Make `context` part of your terminal setup. Run it automatically when you start work.
+```bash
+project my-new-project
+# Fill in objective, next actions
+# Link from today's note: [[my-new-project]]
+```
 
-**"I'm not sure what to work on next"**
-→ Look at your Primary Focus. That's always the answer. Everything else is secondary.
+### Research a Topic
 
-**"I have tasks in multiple places"**
-→ Daily note is for today only. Projects are for reference. Move tasks between them as needed.
+```bash
+wiki topic-name
+# Take notes, add links
+# Tag with #research or #learning
+```
 
-**"Too many wiki pages, can't find things"**
-→ Use tags liberally and search with `nfind`. Trust the search, not your memory.
+### When Interrupted
+
+```bash
+nquick "Paused at: [what you were doing]"
+# Handle interruption
+context  # Resume work
+```
+
+### Emergency: "Where was I?"
+
+```bash
+context   # Always start here
+today     # See today's work
+nrecent   # Check recent files
+```
+
+## Troubleshooting Common Issues
+
+### "I open my daily note and feel overwhelmed by carried-over tasks"
+
+This means tasks are too big or too numerous. Archive to a project file or delete.
+
+### "I forget to check my notes"
+
+Make `context` part of your terminal setup. Run it automatically when you start work.
+
+### "I'm not sure what to work on next"
+
+Look at your Primary Focus. That's always the answer. Everything else is secondary.
+
+### "I have tasks in multiple places"
+
+Daily note is for today only. Projects are for reference. Move tasks between them as needed.
+
+### "Too many wiki pages, can't find things"
+
+Use tags liberally and search with `nfind`. Trust the search, not your memory.
+
+## Advanced Customization
+
+### Auto-run Context on Directory Change
+
+```bash
+# Add to ~/.zshrc
+cd() {
+  builtin cd "$@" && [ -d ~/notes ] && context 2>/dev/null
+}
+```
+
+### Git Integration
+
+```bash
+cd ~/notes
+git init
+echo ".DS_Store" > .gitignore
+git add .
+git commit -m "Initial notes setup"
+```
+
+### Custom Templates
+
+Edit templates in `~/notes/templates/` to match your workflow.
+
+---
+
+The system works best when you trust it and use it consistently. Start simple with just `today` and `context`, then add more features as they become useful.

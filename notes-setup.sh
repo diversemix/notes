@@ -13,6 +13,7 @@ echo "Created notes directory structure at $NOTES_DIR"
 # Create daily note template
 cat > "$NOTES_DIR/templates/daily.md" << 'EOF'
 # {{DATE}}
+<!-- Add thoughts during the day here to be sorted later -->
 
 ## 🎯 Primary Focus
 <!-- What's the ONE thing that matters most today? -->
@@ -85,6 +86,57 @@ cat > "$NOTES_DIR/templates/project.md" << 'EOF'
 ---
 Created: {{DATE}}
 Tags: #project
+EOF
+
+
+# Create area template
+cat > "$NOTES_DIR/templates/area.md" << 'EOF'
+# {{TITLE}}
+
+## Purpose
+
+## Learning Actions
+- [ ] 
+
+## Context
+<!-- Background, why this matters, key decisions -->
+
+## Resources
+<!-- Links to related wiki pages, documents, etc. -->
+
+## Log
+### {{DATE}}
+
+
+---
+Created: {{DATE}}
+Tags: #area
+EOF
+
+# Create resource template
+cat > "$NOTES_DIR/templates/resource.md" << 'EOF'
+# {{TITLE}}
+
+## Notes
+
+## Links
+- ()[]
+- ()[]
+- ()[]
+
+## Context
+<!-- Background, why this matters, key decisions -->
+
+## Resources
+<!-- Links to related wiki pages, documents, etc. -->
+
+## Log
+### {{DATE}}
+
+
+---
+Created: {{DATE}}
+Tags: #resource
 EOF
 
 # Create inbox template for quick captures

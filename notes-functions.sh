@@ -6,7 +6,9 @@ export NOTES_DIR="$HOME/notes"
 
 # Core daily note functions
 
-today() {
+# Create today's daily note file (without opening editor)
+# This is used by both the bash 'today' function and the Neovim integration
+create-today() {
     local date=$(date +%Y-%m-%d)
     local file="$NOTES_DIR/daily/$date.md"
 
@@ -35,26 +37,45 @@ today() {
         fi
     fi
 
+    echo "$file"
+}
+
+today() {
+    local file=$(create-today)
     nvim "$file"
 }
 
+# Find yesterday's (most recent) daily note file (without opening editor)
+# This is used by both the bash 'yesterday' function and the Neovim integration
+find-yesterday() {
+    local today_date=$(date +%Y-%m-%d)
+    local today_file="$NOTES_DIR/daily/$today_date.md"
+
+    # Find the most recent daily log file (excluding today)
+    local recent_file=$(ls -t "$NOTES_DIR/daily/"*.md 2>/dev/null | grep -v "$today_file" | head -n 1)
+
+    if [ -n "$recent_file" ]; then
+        echo "$recent_file"
+    fi
+}
+
 yesterday() {
-    local date=$(date -d "yesterday" +%Y-%m-%d 2>/dev/null || date -v-1d +%Y-%m-%d 2>/dev/null)
-    local file="$NOTES_DIR/daily/$date.md"
-    
-    if [ -f "$file" ]; then
+    local file=$(find-yesterday)
+
+    if [ -n "$file" ]; then
         nvim "$file"
     else
-        echo "No note found for yesterday ($date)"
+        echo "No previous daily notes found"
     fi
 }
 
 # Wiki and project management
-wiki() {
+
+# Create a wiki page file (without opening editor)
+# This is used by both the bash 'wiki' function and the Neovim integration
+create-wiki() {
     local name="$1"
     if [ -z "$name" ]; then
-        echo "Usage: wiki <page-name>"
-        echo "Example: wiki python-testing"
         return 1
     fi
 
@@ -68,54 +89,26 @@ wiki() {
         sed -e "s/{{TITLE}}/$title/g" -e "s/{{DATE}}/$date/g" "$NOTES_DIR/templates/wiki.md" > "$file"
     fi
 
-    nvim "$file"
+    echo "$file"
 }
 
-
-area() {
+wiki() {
     local name="$1"
     if [ -z "$name" ]; then
-        echo "Usage: area <area-name>"
+        echo "Usage: wiki <page-name>"
+        echo "Example: wiki python-testing"
         return 1
     fi
 
-    local slug=$(echo "$name" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')
-    local file="$NOTES_DIR/wiki/areas/$slug.md"
-
-    if [ ! -f "$file" ]; then
-        local title=$(echo "$name" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
-        local date=$(date +%Y-%m-%d)
-        sed -e "s/{{TITLE}}/$title/g" -e "s/{{DATE}}/$date/g" "$NOTES_DIR/templates/area.md" > "$file"
-    fi
-
+    local file=$(create-wiki "$name")
     nvim "$file"
 }
 
-
-resource() {
+# Create a project file (without opening editor)
+# This is used by both the bash 'project' function and the Neovim integration
+create-project() {
     local name="$1"
     if [ -z "$name" ]; then
-        echo "Usage: resource <resource-name>"
-        return 1
-    fi
-
-    local slug=$(echo "$name" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')
-    local file="$NOTES_DIR/wiki/resources/$slug.md"
-
-    if [ ! -f "$file" ]; then
-        local title=$(echo "$name" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
-        local date=$(date +%Y-%m-%d)
-        sed -e "s/{{TITLE}}/$title/g" -e "s/{{DATE}}/$date/g" "$NOTES_DIR/templates/resource.md" > "$file"
-    fi
-
-    nvim "$file"
-}
-
-
-project() {
-    local name="$1"
-    if [ -z "$name" ]; then
-        echo "Usage: project <project-name>"
         return 1
     fi
 
@@ -128,6 +121,79 @@ project() {
         sed -e "s/{{TITLE}}/$title/g" -e "s/{{DATE}}/$date/g" "$NOTES_DIR/templates/project.md" > "$file"
     fi
 
+    echo "$file"
+}
+
+project() {
+    local name="$1"
+    if [ -z "$name" ]; then
+        echo "Usage: project <project-name>"
+        return 1
+    fi
+
+    local file=$(create-project "$name")
+    nvim "$file"
+}
+
+# Create an area file (without opening editor)
+# This is used by both the bash 'area' function and the Neovim integration
+create-area() {
+    local name="$1"
+    if [ -z "$name" ]; then
+        return 1
+    fi
+
+    local slug=$(echo "$name" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')
+    local file="$NOTES_DIR/wiki/areas/$slug.md"
+
+    if [ ! -f "$file" ]; then
+        local title=$(echo "$name" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
+        local date=$(date +%Y-%m-%d)
+        sed -e "s/{{TITLE}}/$title/g" -e "s/{{DATE}}/$date/g" "$NOTES_DIR/templates/area.md" > "$file"
+    fi
+
+    echo "$file"
+}
+
+area() {
+    local name="$1"
+    if [ -z "$name" ]; then
+        echo "Usage: area <area-name>"
+        return 1
+    fi
+
+    local file=$(create-area "$name")
+    nvim "$file"
+}
+
+# Create a resource file (without opening editor)
+# This is used by both the bash 'resource' function and the Neovim integration
+create-resource() {
+    local name="$1"
+    if [ -z "$name" ]; then
+        return 1
+    fi
+
+    local slug=$(echo "$name" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')
+    local file="$NOTES_DIR/wiki/resources/$slug.md"
+
+    if [ ! -f "$file" ]; then
+        local title=$(echo "$name" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
+        local date=$(date +%Y-%m-%d)
+        sed -e "s/{{TITLE}}/$title/g" -e "s/{{DATE}}/$date/g" "$NOTES_DIR/templates/resource.md" > "$file"
+    fi
+
+    echo "$file"
+}
+
+resource() {
+    local name="$1"
+    if [ -z "$name" ]; then
+        echo "Usage: resource <resource-name>"
+        return 1
+    fi
+
+    local file=$(create-resource "$name")
     nvim "$file"
 }
 
@@ -293,6 +359,22 @@ nquick() {
     echo "Note added to today's log"
 }
 
+notes-help() {
+    echo "       today         - Open today's daily note (auto-carries tasks)"
+    echo "       yesterday     - Open yesterday's note"
+    echo "       inbox         - Quick capture"
+    echo "       wiki <name>   - Create/open wiki page (specific topic)"
+    echo "       project <n>   - Create/open project (time bounded)"
+    echo "       area <n>      - Create/open area (time unbounded)"
+    echo "       resource <n>  - Create/open resource (reference material)"
+    echo "  (cx) context       - Show today's focus and active tasks"
+    echo "  (nt) ntasks        - View all incomplete tasks"
+    echo "  (nf) nfind <term>  - Search notes"
+    echo "  (nw) nweek         - Review past week"
+    echo "  (nq) nquick        - Append quick note to today's log"
+    echo
+}
+
 # Aliases for convenience
 alias n='nfind'
 alias nt='ntasks'
@@ -300,18 +382,4 @@ alias tt='tasks-today'
 alias nw='nweek'
 alias cx='context'
 alias nq='nquick'
-
-echo "Notes functions loaded. Key commands:"
-echo "       today         - Open today's daily note (auto-carries tasks)"
-echo "       yesterday     - Open yesterday's note"
-echo "       inbox         - Quick capture"
-echo "       wiki <name>   - Create/open wiki page (specific topic)"
-echo "       project <n>   - Create/open project (time bounded)"
-echo "       area <n>      - Create/open area (time unbounded)"
-echo "       resource <n>  - Create/open resource (reference material)"
-echo "  (cx) context       - Show today's focus and active tasks"
-echo "  (nt) ntasks        - View all incomplete tasks"
-echo "  (nf) nfind <term>  - Search notes"
-echo "  (nw) nweek         - Review past week"
-echo "  (nq) nquick        - Append quick note to today's log"
-echo
+alias nh='notes-help'

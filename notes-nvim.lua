@@ -39,37 +39,33 @@ M.follow_link = function()
 				filepath = M.config.wiki_dir .. "/" .. link:gsub(" ", "-"):lower() .. ".md"
 			end
 
-			-- Create file if it doesn't exist
+			-- Create file if it doesn't exist using the appropriate bash function
 			if vim.fn.filereadable(filepath) == 0 then
-				-- Create parent directories if needed
-				local parent_dir = vim.fn.fnamemodify(filepath, ":h")
-				vim.fn.mkdir(parent_dir, "p")
+				-- Extract the name from the link (last part after /)
+				local name = link:match("([^/]+)$")
 
-				-- Generate title from link
-				local title = link:match("([^/]+)$"):gsub("-", " ")
-				local date = os.date("%Y-%m-%d")
-				local template = string.format(
-					[[# %s
-
-## Overview
-
-## Details
-
-## Related
-
----
-Created: %s
-Tags: 
-]],
-					title,
-					date
-				)
-
-				local file = io.open(filepath, "w")
-				if file then
-					file:write(template)
-					file:close()
+				-- Determine the type based on the path
+				local create_cmd
+				if link:match("^wiki/projects/") then
+					create_cmd = "create-project"
+				elseif link:match("^wiki/areas/") then
+					create_cmd = "create-area"
+				elseif link:match("^wiki/resources/") then
+					create_cmd = "create-resource"
+				else
+					-- Default to wiki for simple links or wiki/* links
+					create_cmd = "create-wiki"
 				end
+
+				-- Call the appropriate bash creation function
+				local result = vim.fn.system(
+					string.format(
+						"bash -c 'source ~/.zshrc 2>/dev/null || source ~/.bashrc 2>/dev/null; %s \"%s\"'",
+						create_cmd,
+						name
+					)
+				)
+				-- The result contains the filepath, but we already know it from above
 			end
 
 			vim.cmd("edit " .. filepath)
@@ -248,6 +244,32 @@ M.show_all_tasks = function()
 	})
 end
 
+-- Open today's daily log (calls bash create-today to handle creation/carryover)
+M.open_today = function()
+	-- Call the bash create-today function which creates the file if needed
+	-- and returns the filepath (without opening an editor)
+	local result = vim.fn.system("bash -c 'source ~/.zshrc 2>/dev/null || source ~/.bashrc 2>/dev/null; create-today'")
+	local filepath = result:gsub("%s+$", "") -- trim trailing whitespace/newline
+
+	-- Open the file in the current Neovim instance
+	vim.cmd("edit " .. filepath)
+end
+
+-- Open yesterday's (most recent) daily log (calls bash find-yesterday)
+M.open_yesterday = function()
+	-- Call the bash find-yesterday function to get the most recent daily log
+	local result = vim.fn.system("bash -c 'source ~/.zshrc 2>/dev/null || source ~/.bashrc 2>/dev/null; find-yesterday'")
+	local filepath = result:gsub("%s+$", "") -- trim trailing whitespace/newline
+
+	if filepath == "" then
+		print("No previous daily notes found")
+		return
+	end
+
+	-- Open the file in the current Neovim instance
+	vim.cmd("edit " .. filepath)
+end
+
 -- Setup key mappings (kickstart-friendly)
 M.setup_keymaps = function()
 	-- Using leader key which kickstart sets to Space
@@ -256,7 +278,8 @@ M.setup_keymaps = function()
 	-- Note operations
 	vim.keymap.set("n", "<leader>nf", M.find_notes, vim.tbl_extend("force", opts, { desc = "[N]otes [F]ind" }))
 	vim.keymap.set("n", "<leader>ng", M.grep_notes, vim.tbl_extend("force", opts, { desc = "[N]otes [G]rep" }))
-	vim.keymap.set("n", "<leader>nt", M.find_by_tag, vim.tbl_extend("force", opts, { desc = "[N]otes [T]ag" }))
+	vim.keymap.set("n", "<leader>nt", M.open_today, vim.tbl_extend("force", opts, { desc = "[N]otes [T]oday" }))
+	vim.keymap.set("n", "<leader>ny", M.open_yesterday, vim.tbl_extend("force", opts, { desc = "[N]otes [Y]esterday" }))
 	vim.keymap.set("n", "<leader>nl", M.insert_link, vim.tbl_extend("force", opts, { desc = "[N]otes [L]ink" }))
 	vim.keymap.set("n", "<leader>nb", M.find_backlinks, vim.tbl_extend("force", opts, { desc = "[N]otes [B]acklinks" }))
 	vim.keymap.set("n", "<leader>nn", M.new_note, vim.tbl_extend("force", opts, { desc = "[N]otes [N]ew" }))
@@ -344,6 +367,8 @@ M.setup = function(opts)
 	vim.api.nvim_create_user_command("NotesFind", M.find_notes, { desc = "Find notes with Telescope" })
 	vim.api.nvim_create_user_command("NotesGrep", M.grep_notes, { desc = "Search notes with Telescope" })
 	vim.api.nvim_create_user_command("NotesTag", M.find_by_tag, { desc = "Find notes by tag" })
+	vim.api.nvim_create_user_command("NotesToday", M.open_today, { desc = "Open today's daily log" })
+	vim.api.nvim_create_user_command("NotesYesterday", M.open_yesterday, { desc = "Open yesterday's daily log" })
 	vim.api.nvim_create_user_command("NotesNew", M.new_note, { desc = "Create new note" })
 	vim.api.nvim_create_user_command("NotesBacklinks", M.find_backlinks, { desc = "Find backlinks to current note" })
 	vim.api.nvim_create_user_command("NotesTasks", M.show_tasks, { desc = "Show tasks in current note" })

@@ -6,8 +6,10 @@ A comprehensive reference for all commands, keybindings, and workflows.
 
 ```bash
 today           # Open today's note (auto-carries tasks)
+yesterday       # Open most recent daily log (handles holidays/gaps)
 context         # Show what you're working on RIGHT NOW
 inbox           # Quick capture for ideas/tasks
+notes-help      # Show all available commands (alias: nh)
 ```
 
 ## Creating Notes
@@ -59,9 +61,10 @@ On a task line:
 
 ```bash
 nweek           # See past week's daily notes
-yesterday       # Open yesterday's note
-nrecent         # Show 10 most recently modified notes
+yesterday       # Open most recent daily log (handles holidays/gaps)
+nrecent         # Show 10 most recently modified notes with relative time
 nrecent 20      # Show 20 most recently modified notes
+                # Example output: "daily/2025-11-16.md    5m ago"
 ```
 
 ## Neovim Keybindings
@@ -70,7 +73,7 @@ nrecent 20      # Show 20 most recently modified notes
 
 | Key | Action | Description |
 |-----|--------|-------------|
-| `<Enter>` | Follow link | Follow [[link]] under cursor |
+| `<M-CR>` | Follow link | Follow [[link]] under cursor (uses correct template) |
 | `<Ctrl>]` | Follow link | Also follows [[link]] (vim-style) |
 | `<Ctrl>O` | Go back | Return to previous location |
 
@@ -78,9 +81,10 @@ nrecent 20      # Show 20 most recently modified notes
 
 | Key | Action | Description |
 |-----|--------|-------------|
+| `<leader>nt` | Open today | Open today's daily log |
+| `<leader>ny` | Open yesterday | Open yesterday's (most recent) daily log |
 | `<leader>nf` | Find notes | Telescope fuzzy finder for notes |
 | `<leader>ng` | Grep notes | Live search through all notes |
-| `<leader>nt` | Find by tag | Search notes by #tag |
 | `<leader>nl` | Insert link | Pick a note and insert [[link]] |
 | `<leader>nb` | Backlinks | Show what links to current note |
 | `<leader>nn` | New note | Create a new wiki note |
@@ -91,9 +95,15 @@ nrecent 20      # Show 20 most recently modified notes
 ### Ex Commands
 
 ```vim
+:NotesToday     # Open today's daily log
+:NotesYesterday # Open yesterday's daily log
 :NotesFind      # Find notes
 :NotesGrep      # Grep through notes
+:NotesTag       # Find notes by tag
 :NotesBacklinks # Show backlinks
+:NotesNew       # Create new note
+:NotesTasks     # Show tasks in current note
+:NotesAllTasks  # Show all incomplete tasks
 ```
 
 ## Link Syntax
@@ -256,11 +266,17 @@ nfind
 
 ## Shell Aliases
 
-Recommended short aliases to add to your shell:
+Built-in aliases (automatically available):
 
 ```bash
-alias nq="nquick"       # Quick note
-alias tt="tasks-today"  # Today's tasks
+n="nfind"           # Search notes
+nt="ntasks"         # View all incomplete tasks
+tt="tasks-today"    # Today's tasks
+nw="nweek"          # Review past week
+cx="context"        # Show current context
+nq="nquick"         # Quick note
+nr="nrecent"        # Recently modified notes
+nh="notes-help"     # Show help
 ```
 
 ## Environment Variables

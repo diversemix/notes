@@ -129,10 +129,11 @@ wiki fastapi-testing-patterns
 ### Linking Strategy
 
 In any note, create links with `[[page-name]]`:
-- In Neovim: Press Enter on a link to follow it (creates the page if it doesn't exist)
+- In Neovim: Press M-Enter on a link to follow it (creates the page with correct template)
+- Use path-based links for specific types: `[[wiki/projects/name]]`, `[[wiki/areas/name]]`, etc.
 - Or use `<leader>nl` to search and insert a link
 
-**Why this helps**: Your notes become an interconnected knowledge base. When you're working on something, you can quickly jump to related information.
+**Why this helps**: Your notes become an interconnected knowledge base. When you're working on something, you can quickly jump to related information. The system automatically uses the right template based on the path.
 
 ### Finding Information Later
 

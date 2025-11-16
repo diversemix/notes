@@ -230,10 +230,46 @@ ntaglist() {
     grep -r -h "#[a-zA-Z0-9_-]\+" "$NOTES_DIR" --include="*.md" -o | sort | uniq -c | sort -rn
 }
 
-# Recent notes
+# Helper function to convert seconds to relative time
+_relative_time() {
+    local seconds=$1
+    local minutes=$((seconds / 60))
+    local hours=$((seconds / 3600))
+    local days=$((seconds / 86400))
+    local weeks=$((seconds / 604800))
+    local months=$((seconds / 2592000))
+
+    if [ $seconds -lt 60 ]; then
+        echo "${seconds}s ago"
+    elif [ $minutes -lt 60 ]; then
+        echo "${minutes}m ago"
+    elif [ $hours -lt 24 ]; then
+        echo "${hours}h ago"
+    elif [ $days -lt 7 ]; then
+        echo "${days}d ago"
+    elif [ $weeks -lt 4 ]; then
+        echo "${weeks}w ago"
+    else
+        echo "${months}mo ago"
+    fi
+}
+
+# Recent notes with relative time
 nrecent() {
     local count=${1:-10}
-    find "$NOTES_DIR" -type f -name "*.md" -printf "%T@ %p\n" | sort -rn | head -n "$count" | cut -d' ' -f2-
+    local now=$(date +%s)
+
+    find "$NOTES_DIR" -type f -name "*.md" | while read -r file; do
+        # Get modification time (portable across Linux/macOS)
+        local mtime=$(stat -f %m "$file" 2>/dev/null || stat -c %Y "$file" 2>/dev/null)
+        local diff=$((now - mtime))
+        local reltime=$(_relative_time $diff)
+        echo "$mtime|$file|$reltime"
+    done | sort -rn | head -n "$count" | while IFS='|' read -r mtime file reltime; do
+        # Strip notes dir prefix for cleaner display
+        local display_path=${file#$NOTES_DIR/}
+        printf "%-60s %s\n" "$display_path" "$reltime"
+    done
 }
 
 # View incomplete tasks across all notes
@@ -361,7 +397,7 @@ nquick() {
 
 notes-help() {
     echo "       today         - Open today's daily note (auto-carries tasks)"
-    echo "       yesterday     - Open yesterday's note"
+    echo "       yesterday     - Open most recent daily log (handles gaps)"
     echo "       inbox         - Quick capture"
     echo "       wiki <name>   - Create/open wiki page (specific topic)"
     echo "       project <n>   - Create/open project (time bounded)"
@@ -370,6 +406,7 @@ notes-help() {
     echo "  (cx) context       - Show today's focus and active tasks"
     echo "  (nt) ntasks        - View all incomplete tasks"
     echo "  (nf) nfind <term>  - Search notes"
+    echo "  (nr) nrecent [n]   - Show recently modified notes (default 10)"
     echo "  (nw) nweek         - Review past week"
     echo "  (nq) nquick        - Append quick note to today's log"
     echo
@@ -382,4 +419,5 @@ alias tt='tasks-today'
 alias nw='nweek'
 alias cx='context'
 alias nq='nquick'
+alias nr='nrecent'
 alias nh='notes-help'

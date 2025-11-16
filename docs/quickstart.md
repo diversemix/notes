@@ -85,8 +85,8 @@ today
 
 ### Create and follow links
 
-1. Type: `See [[test-page]]`
-2. Press Enter on the link (opens test-page)
+1. Type: `See [[wiki/projects/test-project]]`
+2. Press M-Enter on the link (creates project with correct template)
 3. Press `Ctrl+O` to go back
 
 ### Toggle tasks
@@ -130,19 +130,21 @@ today
 today           # Open today's note
 context         # Show what you're working on
 wiki <name>     # Create/open wiki page
-nquick "text"   # Quick capture
-nfind [term]    # Search notes
-ntasks          # Show all incomplete tasks
+notes-help      # Show all commands (alias: nh)
 ```
+
+**See [Quick Reference](reference.md) for the complete command list.**
 
 ## Essential Keybindings (in Neovim)
 
 | Key | Action |
 |-----|--------|
-| `<Enter>` | Follow [[link]] under cursor |
+| `<M-CR>` | Follow [[link]] (uses correct template) |
+| `<Space>nt` | Open today's daily log |
 | `<Space>nf` | Find notes (Telescope) |
-| `<Space>ng` | Search all notes (Telescope) |
 | `<Space>nx` | Toggle task checkbox |
+
+**See [Neovim Keybindings](reference.md#neovim-keybindings) for the complete list.**
 
 ## Next Steps
 

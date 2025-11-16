@@ -50,9 +50,9 @@ nvim
 
 Since you already have Telescope, fzf, and ripgrep, the notes system will use them automatically for:
 
+- **Daily logs**: `<leader>nt` opens today's note, `<leader>ny` opens yesterday's
 - **Fuzzy finding notes**: `<leader>nf` opens Telescope to find any note
 - **Live grep**: `<leader>ng` searches through all your notes in real-time
-- **Tag searching**: `<leader>nt` finds notes by tag using Telescope
 - **Task overview**: `<leader>na` shows all incomplete tasks across all notes
 
 ## Keybindings
@@ -61,9 +61,10 @@ Your leader key is already set to Space in kickstart. Here are your notes keybin
 
 | Key | Action | Description |
 |-----|--------|-------------|
+| `<Space>nt` | Open today | Open today's daily log |
+| `<Space>ny` | Open yesterday | Open yesterday's (most recent) daily log |
 | `<Space>nf` | Find notes | Telescope fuzzy finder for notes |
 | `<Space>ng` | Grep notes | Live search through all notes |
-| `<Space>nt` | Find by tag | Search notes by #tag |
 | `<Space>nl` | Insert link | Pick a note and insert [[link]] |
 | `<Space>nb` | Backlinks | Show what links to current note |
 | `<Space>nn` | New note | Create a new wiki note |
@@ -75,34 +76,24 @@ In markdown files only:
 
 | Key | Action |
 |-----|--------|
-| `<Enter>` | Follow [[link]] under cursor |
+| `<M-CR>` | Follow [[link]] under cursor (uses correct template) |
 | `<Ctrl>]` | Also follows [[link]] (vim-style) |
 
 ## Shell Commands
 
+**Essential commands to get started:**
 ```bash
-# Daily notes
-today           # Open today (auto-carries tasks from last workday)
-yesterday       # Open yesterday (or Friday if it's Monday)
-
-# If it's Monday, 'yesterday' opens Friday's note
-# If it's Sunday, 'yesterday' opens Friday's note
-
-# Creation
-wiki <name>     # Create/open wiki page
-project <name>  # Create/open project
-
-# Quick capture
-nquick "text"  # Quick note to today without opening editor
-
-# Search and review
-nfind [term]    # Search notes (with fzf if no term)
-ntags <tag>     # Find notes with tag
-ntasks          # All incomplete tasks
-tasks-today     # Just today's tasks
-context         # Show current work context
-nweek           # Review past week
+today           # Open today's note
+context         # Show what you're working on
+notes-help      # Show all available commands (alias: nh)
 ```
+
+**For the complete list of all commands**, see:
+- [Essential Daily Commands](reference.md#essential-daily-commands)
+- [Creating Notes](reference.md#creating-notes)
+- [Finding Things](reference.md#finding-things)
+- [Task Management](reference.md#task-management)
+- [Reviewing](reference.md#reviewing)
 
 ## Customization
 
@@ -148,48 +139,28 @@ Change to:
 
 ## Telescope Tips for Notes
 
-### Custom Telescope Picker for Today's Note
-
-Add this to your `~/.config/nvim/lua/notes.lua`:
-
-```lua
--- Quick open today's note
-M.open_today = function()
-  local date = os.date("%Y-%m-%d")
-  local file = M.config.daily_dir .. "/" .. date .. ".md"
-  vim.cmd("edit " .. file)
-end
-
--- Add to keymaps:
-vim.keymap.set('n', '<leader>nd', M.open_today, vim.tbl_extend('force', opts, { desc = '[N]otes To[D]ay' }))
-```
-
 ### Preview Notes in Telescope
 
 Kickstart's Telescope is already configured to preview files. When you use `<Space>nf` or `<Space>ng`, you'll see previews automatically!
 
-## Weekend Handling Details
+## Smart Daily Log Handling
 
-The improved `yesterday` and `today` functions handle weekends intelligently:
+The `yesterday` command finds your most recent daily log, making it perfect for handling holidays, weekends, and gaps:
 
-**Monday morning:**
+**After a long weekend:**
 ```bash
-today       # Carries tasks from Friday (not Sunday)
-yesterday   # Opens Friday's note (not Sunday)
+yesterday   # Opens your last working day (e.g., Friday if it's Tuesday)
 ```
 
-**Friday evening:**
+**After vacation:**
 ```bash
-today       # Normal Friday note
-# Over the weekend, incomplete tasks wait
-# Monday: they'll carry over automatically
+yesterday   # Opens the last day you made notes (before the break)
 ```
 
-**If you accidentally run commands on weekends:**
-```bash
-# Saturday or Sunday
-yesterday   # Opens Friday's note (safe)
-```
+**The system intelligently handles gaps:**
+- `yesterday` always finds the most recent daily log (excluding today)
+- No more "No note found for yesterday" errors after time off
+- Works perfectly with irregular schedules
 
 ## Testing the Installation
 
@@ -198,11 +169,13 @@ yesterday   # Opens Friday's note (safe)
 today
 
 # In Neovim, try these:
-# Type: [[test-page]]
-# Press Enter on it (creates and opens the page)
+# Type: [[wiki/projects/test-project]]
+# Press M-Enter on it (creates project with correct template)
 # Press Ctrl+O to go back
-# Try: <Space>nf (should show Telescope file finder)
-# Try: <Space>ng (should show Telescope grep)
+# Try: <Space>nt (opens today's note)
+# Try: <Space>ny (opens yesterday's note)
+# Try: <Space>nf (shows Telescope file finder)
+# Try: <Space>ng (shows Telescope grep)
 ```
 
 ## Troubleshooting

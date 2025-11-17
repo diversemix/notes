@@ -3,8 +3,17 @@
 # Add these to your ~/.zshrc or ~/.bashrc
 
 export NOTES_DIR="$HOME/notes"
+export BAT_THEME="Catppuccin Mocha"
 
 # Core daily note functions
+
+npush() {
+    pushd "$NOTES_DIR" > /dev/null
+    git add .
+    git commit -m "Notes update: $(date +%Y-%m-%d\ %H:%M)"
+    git push
+    popd > /dev/null
+}
 
 # Create today's daily note file (without opening editor)
 # This is used by both the bash 'today' function and the Neovim integration
@@ -292,8 +301,8 @@ nrecent() {
 
 # View incomplete tasks across all notes
 ntasks() {
-    echo "=== Incomplete Tasks ==="
-    grep -r "^- \[ \]" "$NOTES_DIR" --include="*.md" -H | sed "s|$NOTES_DIR/||g"
+    echo "=== Incomplete Project Tasks ==="
+    grep -r "^- \[ \]" "$NOTES_DIR/wiki/projects/" --include="*.md" -H | sed "s|$NOTES_DIR/||g"
 }
 
 # View today's tasks specifically
@@ -429,6 +438,7 @@ notes-help() {
     echo "  (nr) nrecent [n]   - Show recently modified notes (default 10)"
     echo "  (nw) nweek         - Review past week"
     echo "  (nq) nquick        - Append quick note to today's log"
+    echo "  (np) npush         - Push notes to git repository"
     echo
 }
 
@@ -442,3 +452,4 @@ alias nq='nquick'
 alias nr='nrecent'
 alias nh='notes-help'
 alias ns='nsearch'
+alias np='npush'

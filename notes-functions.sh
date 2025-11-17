@@ -197,12 +197,30 @@ resource() {
     nvim "$file"
 }
 
+nff() {
+    if [ -z "$1" ]; then
+        echo "Usage: nff <search-location>"
+        return 1
+    fi
+    ag --nobreak --noheading . $1 | \
+      fzf --ansi --delimiter ':' \
+          --preview 'bat --color=always {1} --highlight-line {2} ' \
+          --preview-window '+{2}/2' | \
+      cut -d':' -f1,2 | \
+      xargs -I {} sh -c 'nvim +$(echo {} | cut -d: -f2) $(echo {} | cut -d: -f1)'
+}
+
+nsearch() {
+    nff $NOTES_DIR
+}
+
 # Search functions
 nfind() {
+    local location="$NOTES_DIR"
     if [ -z "$1" ]; then
         # Interactive search with fzf/telescope (if available)
         if command -v fzf &> /dev/null; then
-            local file=$(find "$NOTES_DIR" -type f -name "*.md" | fzf --preview 'cat {}')
+            local file=$(find "$location" -type f -name "*.md" | fzf --preview 'cat {}')
             [ -n "$file" ] && nvim "$file"
         else
             echo "Usage: nfind <search-term>"
@@ -210,7 +228,7 @@ nfind() {
         fi
     else
         # Grep search
-        grep -r -n "$1" "$NOTES_DIR" --include="*.md" --color=always 
+        grep -r -n "$1" "$location" --include="*.md" --color=always 
     fi
 }
 
@@ -375,6 +393,7 @@ inbox() {
     fi
 }
 
+
 # Quick note append without opening editor
 nquick() {
     if [ -z "$1" ]; then
@@ -405,7 +424,8 @@ notes-help() {
     echo "       resource <n>  - Create/open resource (reference material)"
     echo "  (cx) context       - Show today's focus and active tasks"
     echo "  (nt) ntasks        - View all incomplete tasks"
-    echo "  (nf) nfind <term>  - Search notes"
+    echo "  (nf) nfind <term>  - Search notes by filename"
+    echo "  (ns) nsearch <term>- Search within notes"
     echo "  (nr) nrecent [n]   - Show recently modified notes (default 10)"
     echo "  (nw) nweek         - Review past week"
     echo "  (nq) nquick        - Append quick note to today's log"
@@ -413,11 +433,12 @@ notes-help() {
 }
 
 # Aliases for convenience
-alias n='nfind'
 alias nt='ntasks'
+alias nf='nfind'
 alias tt='tasks-today'
 alias nw='nweek'
 alias cx='context'
 alias nq='nquick'
 alias nr='nrecent'
 alias nh='notes-help'
+alias ns='nsearch'

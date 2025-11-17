@@ -7,6 +7,7 @@ local M = {}
 -- Configuration
 M.config = {
 	notes_dir = vim.fn.expand("~/notes"),
+	inbox_file = vim.fn.expand("~/notes/inbox/inbox.md"),
 	wiki_dir = vim.fn.expand("~/notes/wiki"),
 	daily_dir = vim.fn.expand("~/notes/daily"),
 }
@@ -244,6 +245,11 @@ M.show_all_tasks = function()
 	})
 end
 
+-- Open inbox
+M.inbox = function()
+	vim.cmd("edit " .. M.config.inbox_file)
+end
+
 -- Open today's daily log (calls bash create-today to handle creation/carryover)
 M.open_today = function()
 	-- Call the bash create-today function which creates the file if needed
@@ -258,7 +264,8 @@ end
 -- Open yesterday's (most recent) daily log (calls bash find-yesterday)
 M.open_yesterday = function()
 	-- Call the bash find-yesterday function to get the most recent daily log
-	local result = vim.fn.system("bash -c 'source ~/.zshrc 2>/dev/null || source ~/.bashrc 2>/dev/null; find-yesterday'")
+	local result =
+		vim.fn.system("bash -c 'source ~/.zshrc 2>/dev/null || source ~/.bashrc 2>/dev/null; find-yesterday'")
 	local filepath = result:gsub("%s+$", "") -- trim trailing whitespace/newline
 
 	if filepath == "" then
@@ -278,6 +285,7 @@ M.setup_keymaps = function()
 	-- Note operations
 	vim.keymap.set("n", "<leader>nf", M.find_notes, vim.tbl_extend("force", opts, { desc = "[N]otes [F]ind" }))
 	vim.keymap.set("n", "<leader>ng", M.grep_notes, vim.tbl_extend("force", opts, { desc = "[N]otes [G]rep" }))
+	vim.keymap.set("n", "<leader>ni", M.inbox, vim.tbl_extend("force", opts, { desc = "[N]otes [I]nbox" }))
 	vim.keymap.set("n", "<leader>nt", M.open_today, vim.tbl_extend("force", opts, { desc = "[N]otes [T]oday" }))
 	vim.keymap.set("n", "<leader>ny", M.open_yesterday, vim.tbl_extend("force", opts, { desc = "[N]otes [Y]esterday" }))
 	vim.keymap.set("n", "<leader>nl", M.insert_link, vim.tbl_extend("force", opts, { desc = "[N]otes [L]ink" }))
@@ -366,6 +374,7 @@ M.setup = function(opts)
 	-- Create user commands (can be called with :NotesFind, etc.)
 	vim.api.nvim_create_user_command("NotesFind", M.find_notes, { desc = "Find notes with Telescope" })
 	vim.api.nvim_create_user_command("NotesGrep", M.grep_notes, { desc = "Search notes with Telescope" })
+	vim.api.nvim_create_user_command("NotesInbox", M.inbox, { desc = "Open the notes inbox" })
 	vim.api.nvim_create_user_command("NotesTag", M.find_by_tag, { desc = "Find notes by tag" })
 	vim.api.nvim_create_user_command("NotesToday", M.open_today, { desc = "Open today's daily log" })
 	vim.api.nvim_create_user_command("NotesYesterday", M.open_yesterday, { desc = "Open yesterday's daily log" })
@@ -374,7 +383,7 @@ M.setup = function(opts)
 	vim.api.nvim_create_user_command("NotesTasks", M.show_tasks, { desc = "Show tasks in current note" })
 	vim.api.nvim_create_user_command("NotesAllTasks", M.show_all_tasks, { desc = "Show all incomplete tasks" })
 
-	print("Notes system loaded. Use <leader>n[f/g/t/l/b/n/x/s/a] or :Notes* commands")
+	print("Notes system loaded. Use <leader>n[f/g/i/t/l/b/n/x/s/a] or :Notes* commands")
 end
 
 return M

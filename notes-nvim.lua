@@ -59,14 +59,10 @@ M.follow_link = function()
 				end
 
 				-- Call the appropriate bash creation function
-				local result = vim.fn.system(
-					string.format(
-						"bash -c 'source ~/.zshrc 2>/dev/null || source ~/.bashrc 2>/dev/null; %s \"%s\"'",
-						create_cmd,
-						name
-					)
-				)
-				-- The result contains the filepath, but we already know it from above
+				-- NOTE: Ensure you are sourcing the notes-function.sh in your .bash_profile or .zprofile so that it loads
+				local result = vim.fn.system(string.format("bash -c -l '%s \"%s\"'", create_cmd, name))
+				-- Use the filepath returned by the bash script (trim whitespace)
+				filepath = result:gsub("%s+$", "")
 			end
 
 			vim.cmd("edit " .. filepath)

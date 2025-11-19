@@ -10,8 +10,8 @@ chmod +x notes-setup.sh
 ./notes-setup.sh
 
 # 2. Add shell functions
-cat notes-functions.sh >> ~/.zshrc
-source ~/.zshrc
+cat notes-functions.sh >> ~/.zprofile
+source ~/.zprofile
 
 # 3. Add Neovim integration
 cp notes-nvim.lua ~/.config/nvim/lua/notes.lua
@@ -85,8 +85,8 @@ today
 
 ### Create and follow links
 
-1. Type: `See [[wiki/projects/test-project]]`
-2. Press M-Enter on the link (creates project with correct template)
+1. Type: `See [[areas/test-project]]`
+2. Press M-Enter on the link (creates area with correct template)
 3. Press `Ctrl+O` to go back
 
 ### Toggle tasks
@@ -149,9 +149,9 @@ notes-help      # Show all commands (alias: nh)
 ## Next Steps
 
 1. **Use it for a week**: Just `today` and `context` commands
-2. **Read the full guide**: [User Guide](user-guide.md) for workflows
-3. **Check reference**: [Reference](reference.md) for all commands
-4. **Learn wiki links**: [Wiki Links](wiki-links.md) for linking strategy
+2. **Learn the philosophy**: [User Guide](user-guide.md) for executive function strategies
+3. **Master workflows**: [Daily Workflows](daily-workflows.md) for practical patterns
+4. **Quick reference**: [Reference](reference.md) for command lookup
 
 ## Quick Tips
 

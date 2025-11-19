@@ -23,8 +23,8 @@ chmod +x notes-setup.sh
 ./notes-setup.sh
 
 # 2. Add shell functions
-cat notes-functions.sh >> ~/.zshrc
-source ~/.zshrc
+cat notes-functions.sh >> ~/.zprofile
+source ~/.zprofile
 
 # 3. Add Neovim integration
 cp notes-nvim.lua ~/.config/nvim/lua/notes.lua
@@ -51,9 +51,9 @@ Full documentation is available in the `docs/` folder:
 
 - **[Installation Guide](docs/installation.md)** - Complete setup for kickstart.nvim users
 - **[Quickstart](docs/quickstart.md)** - Get started in 5 minutes
-- **[User Guide](docs/user-guide.md)** - Workflows and executive function strategies
-- **[Wiki Links](docs/wiki-links.md)** - How to use wiki-style links effectively
-- **[Reference](docs/reference.md)** - Complete command and keybinding reference
+- **[User Guide](docs/user-guide.md)** - Philosophy and executive function strategies
+- **[Daily Workflows](docs/daily-workflows.md)** - Practical usage patterns and scenarios
+- **[Reference](docs/reference.md)** - Command and keybinding quick reference
 
 ## What Makes This Different
 
@@ -109,12 +109,12 @@ today
 ```
 ~/notes/
 ├── daily/              # Daily notes (YYYY-MM-DD.md)
-├── wiki/
-│   ├── projects/       # Active projects
-│   ├── areas/          # Ongoing responsibilities
-│   └── resources/      # Reference material
+├── wiki/               # Wiki pages for topics/references
+├── areas/              # Ongoing responsibilities and projects
 ├── inbox/              # Quick captures
-└── templates/          # Customizable templates
+├── templates/          # Customizable templates
+├── archive/            # Old/completed content
+└── incoming/           # Temporary holding area
 ```
 
 ## Contributing
@@ -129,7 +129,8 @@ MIT - Use it, modify it, make it yours.
 
 - Read the [Installation Guide](docs/installation.md) for setup help
 - Check the [Reference](docs/reference.md) for command syntax
-- Review the [User Guide](docs/user-guide.md) for workflow questions
+- Review the [User Guide](docs/user-guide.md) for philosophy and strategies
+- See [Daily Workflows](docs/daily-workflows.md) for practical usage patterns
 
 ---
 

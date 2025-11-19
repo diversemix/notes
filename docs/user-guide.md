@@ -1,6 +1,6 @@
 # User Guide
 
-This guide covers daily workflows and executive function support strategies.
+Understanding the system's philosophy and how it supports executive function.
 
 ## Executive Function Support Strategies
 
@@ -11,317 +11,293 @@ This system is designed to help with:
 - **Reduced friction**: Templates and automation minimize decision fatigue
 - **External memory**: Everything written down, nothing held in working memory
 
-## Daily Workflow
+### How It Addresses Executive Function Challenges
 
-### Morning Routine (5 minutes)
+#### Working Memory Overload
 
-```bash
-# 1. Open today's note (automatically carries over yesterday's incomplete tasks)
-today
+**Problem**: Trying to hold too much in your head leads to forgetting, anxiety, and mental fatigue.
 
-# 2. Review what was carried over and set primary focus
-# Edit the "Primary Focus" section - choose ONE thing that matters most
-```
+**Solution**: The system externalizes everything:
+- Tasks carry forward automatically
+- `context` command shows current work state
+- All information lives in files, not in your brain
 
-**Why this helps**: Starting with carried-over tasks removes the "where was I?" problem. Having a single primary focus reduces overwhelm.
+#### Context Switching
 
-### During the Day
+**Problem**: After an interruption, it takes 15-23 minutes to fully re-engage with complex work.
 
-#### When starting work or after a break
+**Solution**:
+- `context` shows exactly what you were doing
+- `nquick "Paused at: X"` creates breadcrumbs
+- Today's note is always one command away
 
-```bash
-# Quick context reminder without opening files
-context
-```
+#### Task Initiation
 
-This shows:
-- Your primary focus for the day
-- Your active tasks
-- What you're currently working on
+**Problem**: Getting started is hard when facing overwhelming task lists or unclear next actions.
 
-**Why this helps**: Eliminates the "what was I doing?" moment after interruptions. You don't need to search through notes or hold context in memory.
+**Solution**:
+- Primary Focus reduces decisions to ONE thing
+- Tasks are concrete and actionable
+- Templates remove the "blank page" problem
 
-#### Quick capture (when something comes up)
+#### Follow-Through
 
-```bash
-# Add a note without opening editor
-nquick "idea for improving the auth flow"
-```
+**Problem**: Tasks get lost, forgotten, or slip through the cracks.
 
-**Why this helps**: Capture thoughts immediately without losing focus. Process them later during a dedicated time.
+**Solution**:
+- Automatic carry-over ensures nothing is forgotten
+- You only manage today's tasks
+- System handles continuity for you
 
-#### When switching tasks
+## Core Principles
 
-1. Check off completed task in today's note: Open with `today` and toggle with `<leader>nx` in Neovim (or manually change `[ ]` to `[x]`)
-2. Run `context` to see what's next
-3. Add a quick note about what you were doing: `nquick "Paused at: writing tests for user auth"`
+### 1. Write Everything Down Immediately
 
-**Why this helps**: Creates breadcrumbs for yourself. When you return, you know exactly where you left off.
+Your notes are your external memory. The moment something enters your mind:
+- Quick thought? → `nquick "thought"`
+- Longer idea? → `inbox`
+- Task for later? → Add to today's note
 
-### End of Day (5 minutes)
+**Why**: Trying to remember things causes cognitive load and anxiety.
 
-```bash
-# 1. Review today
-today
+### 2. Single Source of Truth
 
-# 2. Check off completed tasks (mark [x])
-# 3. Add anything to daily reflection
-# 4. Remove tasks that are no longer relevant
-# 5. Tomorrow's note will automatically carry over anything still incomplete
-```
+Today's daily note is where active work happens. Everything else is reference.
 
-**Important**: Don't carry over tasks manually - it happens automatically when you run `today` tomorrow.
+**Why**: Multiple lists create confusion and overhead. One place = one decision.
 
-### Weekly Review (15 minutes, Sunday/Friday)
+### 3. Automatic Continuity
 
-```bash
-# See the past week's work
-nweek
+Tasks carry forward automatically. You just mark what's done.
 
-# Review:
-# - What patterns emerge?
-# - What tasks keep getting carried over? (may need to break down or delegate)
-# - What went well?
-```
+**Why**: Manual carry-over creates friction and often gets skipped.
 
-## Task Management Strategy
+### 4. Context On Demand
+
+Run `context` whenever you need orientation. Make it muscle memory.
+
+**Why**: Reduces the cognitive cost of "getting back into it" after breaks.
+
+### 5. Low Friction
+
+Commands are short. Templates handle structure. Everything is fast.
+
+**Why**: Friction kills habit formation. The system must be easier than not using it.
+
+### 6. Regular Checkpoints
+
+Daily reflections and weekly reviews keep you calibrated without becoming burdensome.
+
+**Why**: Reflection creates learning, but only if it's lightweight enough to do consistently.
+
+## Task Management Philosophy
 
 ### The Three States of Tasks
 
-1. **Daily Thoughts**: Recorded at the top of daily notes
-2. **Today's Tasks** (in daily note): What you're doing today
-3. **Project Tasks** (in project files): Tracked by project, pulled into daily as needed
+1. **Inbox thoughts**: Quick captures, unprocessed
+2. **Today's tasks**: What you're doing today (in daily note)
+3. **Area tasks**: Tracked by project/area, pulled into daily as needed
 
-### Handling Tasks That Keep Getting Carried Over
+### When to Use Each
 
-If a task appears in 3+ daily notes:
+**Inbox**: Brain dump, interruptions, "I'll think about this later"
 
-```bash
-# Option 1: Break it down
-# Instead of: "- [ ] Refactor authentication system"
-# Try: "- [ ] Map out auth system components (30 min)"
+**Today's tasks**: Concrete actions for today. Should be 3-7 items maximum.
 
-# Option 2: Move to a project
-project auth-refactor
-# Then add specific next actions to the project file
-# Pull individual actions into daily notes as needed
+**Area tasks**: Ongoing project next actions. Pull into daily notes as capacity allows.
 
-# Option 3: Delete it
-# If you haven't done it in a week, you probably don't need to
-```
+### Handling Chronic Carry-Over
 
-**Why this helps**: Chronic carry-over creates guilt and clutter. Address it systematically.
+If a task appears in 3+ daily notes, it needs attention:
 
-## Link and Wiki Strategy
+**Option 1: Break it down**
+- Big tasks are overwhelming
+- Make it smaller and more concrete
+- "Map out auth components (30 min)" vs "Refactor auth"
 
-### When to Create a Wiki Page
+**Option 2: Move it to an area**
+- Some things aren't today-tasks
+- Create/update an area file
+- Track project progress there
+- Pull specific actions into daily as needed
 
-Create a wiki page when you have:
-- Reference information you'll need again
-- Complex topics that need structure
-- Knowledge worth keeping separate from daily notes
+**Option 3: Delete it**
+- If you haven't done it in a week, be honest
+- Is it actually important?
+- Decision to not do something is valid
 
-```bash
-# Create or open a wiki page
-wiki fastapi-testing-patterns
-```
+**Why this matters**: Chronic carry-over creates guilt and reduces trust in the system.
 
-### Linking Strategy
+## Information Architecture
 
-In any note, create links with `[[page-name]]`:
-- In Neovim: Press M-Enter on a link to follow it (creates the page with correct template)
-- Use path-based links for specific types: `[[wiki/projects/name]]`, `[[wiki/areas/name]]`, etc.
-- Or use `<leader>nl` to search and insert a link
+### Wiki Pages
 
-**Why this helps**: Your notes become an interconnected knowledge base. When you're working on something, you can quickly jump to related information. The system automatically uses the right template based on the path.
+**Use for**: Knowledge, references, how-tos, learning notes
 
-### Finding Information Later
+**Characteristics**:
+- Timeless information
+- You'll refer back to it
+- Builds your knowledge base
 
-```bash
-# Search by content
-nfind "database migration"
+**Examples**:
+- `wiki vim-tips`
+- `wiki python-async-patterns`
+- `wiki meeting-notes-format`
 
-# Search by tag
-ntags project
+### Areas
 
-# Find what links to current page
-# (in Neovim: <leader>nb)
-```
+**Use for**: Projects, ongoing responsibilities, things with multiple next actions
 
-## Context Switching Support
+**Characteristics**:
+- Time-bounded (has an end, even if far away)
+- Requires tracking progress
+- Has multiple steps/next actions
 
-### Scenario: You're working and get interrupted
+**Examples**:
+- `area auth-refactor`
+- `area backend-development`
+- `area learning-rust`
 
-1. Before handling interruption:
-   ```bash
-   nquick "Paused: implementing user validation, next: add email check"
-   ```
+### Daily Notes
 
-2. Handle the interruption
+**Use for**: Everything happening today
 
-3. When returning:
-   ```bash
-   context  # See what you were doing
-   today    # Jump back to your note to see the pause note
-   ```
+**Characteristics**:
+- Today's focus
+- Today's tasks
+- Today's thoughts and reflections
+- Links to relevant wiki/area pages
 
-### Scenario: You have good focus but forget what's next
+**Don't use for**:
+- Long-term information
+- Things you'll need to find later
+- Knowledge building
 
-Run `context` regularly. Set up a terminal alias or keybinding to make it one keystroke.
+### Inbox
 
-Consider a simple reminder:
-```bash
-# Add to your shell profile
-# Shows context every time you change to project directory
-cd() {
-  builtin cd "$@" && [ -d ~/notes ] && context 2>/dev/null
-}
-```
+**Use for**: Quick captures that need processing later
 
-### Scenario: End of day, brain is tired
+**Process regularly**: Daily or every few days, move items to appropriate places.
 
-Don't worry about perfect task management. Just:
+## Linking Strategy
 
-1. Run `today`
-2. Check off what you did
-3. Delete what's irrelevant
-4. Close it
+### When to Link
 
-Tomorrow's note will handle the rest automatically.
+Create `[[links]]` when:
+- You reference another note
+- You want to build connections
+- Future you needs to find related information
 
-## Advanced Tips
-
-### 1. Time-blocking in Daily Notes
+### Link Patterns
 
 ```markdown
-## ✅ Today's Tasks
-- [ ] 9:00-10:30 - Focus block: [[auth-refactor]] tests
-- [ ] 10:30-11:00 - Code review
-- [ ] 14:00-16:00 - Focus block: [[database-optimization]]
+Today's note → [[areas/project-name]]     # Link to project
+Wiki page → [[other-wiki-page]]            # Cross-reference
+Area note → [[wiki/pattern-name]]          # Link to knowledge
 ```
 
-### 2. Energy Tracking
+### Backlinks
 
-Use the daily reflection to track energy:
-```markdown
-**Energy level:** 7/10
-**What affected it:** Good sleep, morning walk
-```
+Use `<leader>nb` in Neovim to see what links to current page.
 
-Over time, patterns emerge about when you're most productive.
+**Why it matters**: Backlinks reveal connections you might have forgotten.
 
-### 3. Friday Brain Dump
+## Dealing with Common Challenges
 
-Every Friday, run `inbox` and dump everything on your mind:
-- Things you want to learn
-- Projects you're thinking about
-- Ideas that keep popping up
+### "I open my daily note and feel overwhelmed"
 
-Process during the weekend or Monday morning.
+**Cause**: Too many carried-over tasks, or tasks too vague.
 
-### 4. Project "Current State" Section
-
-In project files, maintain a "Current State" section at the top:
-```markdown
-## Current State
-**Last worked on:** 2025-11-08
-**Currently:** Writing integration tests for auth middleware
-**Next up:** Add error handling tests
-**Blocked by:** None
-```
-
-When you return to a project after days/weeks, this tells you exactly where you are.
-
-## Key Principles
-
-1. **Write everything down immediately**: Your notes are your external memory
-2. **Single source of truth**: Today's daily note is where active work happens
-3. **Low friction**: Commands are short, templates handle structure
-4. **Automatic continuity**: Tasks carry over without manual work
-5. **Context on demand**: Run `context` whenever you need orientation
-6. **Regular checkpoints**: Daily reflections and weekly reviews keep you calibrated
-
-## Common Workflows
-
-### Start a New Project
-
-```bash
-project my-new-project
-# Fill in objective, next actions
-# Link from today's note: [[my-new-project]]
-```
-
-### Research a Topic
-
-```bash
-wiki topic-name
-# Take notes, add links
-# Tag with #research or #learning
-```
-
-### When Interrupted
-
-```bash
-nquick "Paused at: [what you were doing]"
-# Handle interruption
-context  # Resume work
-```
-
-### Emergency: "Where was I?"
-
-```bash
-context   # Always start here
-today     # See today's work
-nrecent   # Check recent files
-```
-
-## Troubleshooting Common Issues
-
-### "I open my daily note and feel overwhelmed by carried-over tasks"
-
-This means tasks are too big or too numerous. Archive to a project file or delete.
+**Fix**:
+1. Pick ONE task for right now
+2. Move others to area files
+3. Make remaining tasks concrete (30-min chunks)
+4. Consider deleting tasks you've been ignoring
 
 ### "I forget to check my notes"
 
-Make `context` part of your terminal setup. Run it automatically when you start work.
+**Cause**: Not yet a habit, or too much friction.
+
+**Fix**:
+1. Make `context` automatic (add to shell startup)
+2. Keep terminal window open with notes
+3. Set reminders for first week
+4. Use `<leader>nt` in Neovim instead of shell command
 
 ### "I'm not sure what to work on next"
 
-Look at your Primary Focus. That's always the answer. Everything else is secondary.
+**Cause**: Unclear primary focus or too many options.
 
-### "I have tasks in multiple places"
+**Fix**:
+1. Look at Primary Focus in today's note
+2. That's always the answer
+3. If unclear, update it right now
+4. Everything else is secondary
 
-Daily note is for today only. Projects are for reference. Move tasks between them as needed.
+### "I have tasks scattered everywhere"
+
+**Cause**: Using multiple systems or not processing inbox.
+
+**Fix**:
+1. Daily note = today only
+2. Area notes = project tracking
+3. Process inbox daily
+4. Don't use other todo systems alongside this
 
 ### "Too many wiki pages, can't find things"
 
-Use tags liberally and search with `nfind`. Trust the search, not your memory.
+**Cause**: Trying to remember location instead of using search.
 
-## Advanced Customization
+**Fix**:
+1. Use `nfind <term>` - trust search, not memory
+2. Use tags: `ntags <tag>`
+3. Use backlinks: `<leader>nb`
+4. Archive old/irrelevant pages occasionally
 
-### Auto-run Context on Directory Change
+## Building the Habit
 
-```bash
-# Add to ~/.zshrc
-cd() {
-  builtin cd "$@" && [ -d ~/notes ] && context 2>/dev/null
-}
-```
+### Week 1: Just the Basics
 
-### Git Integration
+Focus on:
+- `today` every morning
+- `context` after breaks
+- Mark tasks complete
 
-```bash
-cd ~/notes
-git init
-echo ".DS_Store" > .gitignore
-git add .
-git commit -m "Initial notes setup"
-```
+Don't worry about:
+- Perfect organization
+- Wiki pages
+- Complex linking
 
-### Custom Templates
+### Week 2-3: Add Capture
 
-Edit templates in `~/notes/templates/` to match your workflow.
+Add:
+- `nquick` for quick thoughts
+- `inbox` for longer captures
+- `yesterday` to review previous day
+
+### Week 4+: Full System
+
+Add:
+- Wiki pages for knowledge
+- Area pages for projects
+- Weekly reviews with `nweek`
+- Linking between notes
+
+## Remember
+
+**Trust the system**: Tasks carry forward. You just need to mark what's done.
+
+**Use context constantly**: After every break, interruption, or moment of "wait, what was I doing?"
+
+**Primary Focus is sacred**: One thing that matters most. When in doubt, work on it.
+
+**Write everything down**: Your brain is for thinking, not storing.
+
+**Low friction wins**: Short commands, quick captures, templates. The easier it is, the more you'll use it.
 
 ---
 
-The system works best when you trust it and use it consistently. Start simple with just `today` and `context`, then add more features as they become useful.
+**Next steps:**
+- [Daily Workflows](daily-workflows.md) - Practical usage patterns
+- [Reference](reference.md) - Command quick reference
+- [Installation](installation.md) - Setup guide

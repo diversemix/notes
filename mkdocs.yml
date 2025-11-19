@@ -1,4 +1,4 @@
-site_name: Notes - Neovim Note-Taking for Executive Function
+site_name: diversemix/notes - Neovim Notes facilitating Executive Function
 site_description: A Neovim and shell-based note-taking system designed for engineers with executive function challenges
 site_author: diversemix
 repo_url: https://github.com/diversemix/notes
@@ -35,16 +35,18 @@ nav:
   - Getting Started:
       - Installation: installation.md
       - Quickstart: quickstart.md
-      - ReadTheDocs Setup: readthedocs-setup.md
-  - User Guide:
-      - Daily Workflows: user-guide.md
-      - Wiki Links: wiki-links.md
+  - User Guide: user-guide.md
+  - Daily Workflows: daily-workflows.md
   - Reference: reference.md
 
 markdown_extensions:
   - admonition
   - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
@@ -59,7 +61,9 @@ markdown_extensions:
 
 plugins:
   - search
-  - social
+  # - social  # Disabled during development for faster live reload
+  - mermaid2:
+      javascript: https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs
 
 extra:
   social:

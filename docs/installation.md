@@ -16,13 +16,13 @@ This creates `~/notes/` with the folder structure and templates.
 ### 2. Add Shell Functions
 
 ```bash
-# For Zsh (most common)
-cat notes-functions.sh >> ~/.zshrc
+# For Bash use '~/.bash_profile' instead of '~/.zprofile'
+cat notes-functions.sh >> ~/.zprofile
 
 # Alternatively add a line to source notes-functions.sh
 
 # Then source it
-source ~/.zshrc
+source ~/.zprofile
 ```
 
 ### 3. Add to Your Kickstart Config
@@ -50,27 +50,26 @@ nvim
 
 Since you already have Telescope, fzf, and ripgrep, the notes system will use them automatically for:
 
-- **Daily logs**: `<leader>nt` opens today's note, `<leader>ny` opens yesterday's
+- **Today**: `<leader>nt` opens today's note, `<leader>ny` opens yesterday's
 - **Fuzzy finding notes**: `<leader>nf` opens Telescope to find any note
 - **Live grep**: `<leader>ng` searches through all your notes in real-time
 - **Task overview**: `<leader>na` shows all incomplete tasks across all notes
+- **Inserting links**: `<leader>nl` to pick a note and insert a link
 
 ## Keybindings
 
-Your leader key is already set to Space in kickstart. Here are your notes keybindings:
-
 | Key | Action | Description |
 |-----|--------|-------------|
-| `<Space>nt` | Open today | Open today's daily log |
-| `<Space>ny` | Open yesterday | Open yesterday's (most recent) daily log |
-| `<Space>nf` | Find notes | Telescope fuzzy finder for notes |
-| `<Space>ng` | Grep notes | Live search through all notes |
-| `<Space>nl` | Insert link | Pick a note and insert [[link]] |
-| `<Space>nb` | Backlinks | Show what links to current note |
-| `<Space>nn` | New note | Create a new wiki note |
-| `<Space>nx` | Toggle checkbox | Toggle task [ ] ↔ [x] |
-| `<Space>ns` | Show tasks | Tasks in current note (quickfix) |
-| `<Space>na` | All tasks | All incomplete tasks (Telescope) |
+| `<leader>nt` | Open today | Open today's daily log |
+| `<leader>ny` | Open yesterday | Open yesterday's (most recent) daily log |
+| `<leader>nf` | Find notes | Telescope fuzzy finder for notes |
+| `<leader>ng` | Grep notes | Live search through all notes |
+| `<leader>nl` | Insert link | Pick a note and insert [[link]] |
+| `<leader>nb` | Backlinks | Show what links to current note |
+| `<leader>nn` | New note | Create a new wiki note |
+| `<leader>nx` | Toggle checkbox | Toggle task [ ] ↔ [x] |
+| `<leader>ns` | Show tasks | Tasks in current note (quickfix) |
+| `<leader>na` | All tasks | All incomplete tasks (Telescope) |
 
 In markdown files only:
 
@@ -89,11 +88,11 @@ notes-help      # Show all available commands (alias: nh)
 ```
 
 **For the complete list of all commands**, see:
-- [Essential Daily Commands](reference.md#essential-daily-commands)
+- [Daily Notes Commands](reference.md#daily-notes)
 - [Creating Notes](reference.md#creating-notes)
-- [Finding Things](reference.md#finding-things)
+- [Search and Navigation](reference.md#search-and-navigation)
 - [Task Management](reference.md#task-management)
-- [Reviewing](reference.md#reviewing)
+- [Review Commands](reference.md#review)
 
 ## Customization
 
@@ -117,7 +116,7 @@ M.config = {
 }
 ```
 
-And in `~/.zshrc`:
+And in `~/.zprofile`:
 
 ```bash
 export NOTES_DIR="$HOME/my-notes"  # Change this
@@ -141,7 +140,7 @@ Change to:
 
 ### Preview Notes in Telescope
 
-Kickstart's Telescope is already configured to preview files. When you use `<Space>nf` or `<Space>ng`, you'll see previews automatically!
+Kickstart's Telescope is already configured to preview files. When you use `<leader>nf` or `<Space>ng`, you'll see previews automatically!
 
 ## Smart Daily Log Handling
 
@@ -169,13 +168,13 @@ yesterday   # Opens the last day you made notes (before the break)
 today
 
 # In Neovim, try these:
-# Type: [[wiki/projects/test-project]]
-# Press M-Enter on it (creates project with correct template)
+# Type: [[areas/test-project]]
+# Press M-Enter on it (creates area with correct template)
 # Press Ctrl+O to go back
-# Try: <Space>nt (opens today's note)
-# Try: <Space>ny (opens yesterday's note)
-# Try: <Space>nf (shows Telescope file finder)
-# Try: <Space>ng (shows Telescope grep)
+# Try: <leader>nt (opens today's note)
+# Try: <leader>ny (opens yesterday's note)
+# Try: <leader>nf (shows Telescope file finder)
+# Try: <leader>ng (shows Telescope grep)
 ```
 
 ## Troubleshooting
@@ -198,8 +197,8 @@ today
 type yesterday
 # Should show the function with weekend logic
 
-# If not, make sure you sourced ~/.zshrc
-source ~/.zshrc
+# If not, make sure you sourced ~/.zprofile
+source ~/.zprofile
 ```
 
 ### Telescope not previewing markdown
@@ -219,7 +218,7 @@ require('telescope').setup {
 1. Start with `today` and get comfortable with daily notes
 2. Use `context` frequently (make it muscle memory)
 3. After a week, add wiki pages with `wiki <topic>`
-4. Explore Telescope search with `<Space>ng`
-5. Read the [User Guide](user-guide.md) for executive function strategies
+4. Explore Telescope search with `<leader>ng`
+5. Read the [User Guide](user-guide.md) for philosophy and [Daily Workflows](daily-workflows.md) for practical patterns
 
 Your kickstart.nvim setup already has all the powerful search capabilities - the notes system just integrates with them seamlessly!

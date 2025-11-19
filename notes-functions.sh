@@ -234,7 +234,11 @@ nrecent() {
 
     find "$NOTES_DIR" -type f -name "*.md" | while read -r file; do
         # Get modification time (portable across Linux/macOS)
-        local mtime=$(stat -f %m "$file" 2>/dev/null || stat -c %Y "$file" 2>/dev/null)
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            local mtime=$(stat -f %m "$file")
+        else
+            local mtime=$(stat -c %Y "$file")
+        fi
         local diff=$((now - mtime))
         local reltime=$(_relative_time $diff)
         echo "$mtime|$file|$reltime"
@@ -370,20 +374,36 @@ nquick() {
 }
 
 notes-help() {
-    echo "       today         - Open today's daily note (auto-carries tasks)"
-    echo "       yesterday     - Open most recent daily log (handles gaps)"
-    echo "       inbox         - Quick capture"
-    echo "       wiki <name>   - Create/open wiki page (specific topic)"
-    echo "       area <n>      - Create/open area (time unbounded)"
-    echo "  (cx) context       - Show today's focus and active tasks"
-    echo "  (nt) ntasks        - View all incomplete tasks"
-    echo "  (nf) nfind <term>  - Search notes by filename"
-    echo "  (ns) nsearch <term>- Search within notes"
-    echo "  (nr) nrecent [n]   - Show recently modified notes (default 10)"
-    echo "  (nw) nweek         - Review past week"
+    echo
+    echo "📝 Notes Commands ---------------------------------------------------"
+    echo
+    echo "    today         - Open today's daily note (auto-carries tasks)"
+    echo "    yesterday     - Open most recent daily log (handles gaps)"
+    echo "    inbox <msg>   - Quick capture of message for later"
+    echo "    wiki <name>   - Create/open wiki page (specific topic)"
+    echo "    area <n>      - Create/open area (time unbounded)"
+    echo
+    echo " ⚡"
     echo "  (nq) nquick        - Append quick note to today's log"
-    echo "  (np) npush         - Push notes to git repository"
+    echo
+    echo " 🔍"
+    echo "  (cx) context       - Show today's focus and active tasks"
+    echo "  (nf) nfind <term>  - Search notes by filename"
+    echo "  (nr) nrecent [n]   - Show recently modified notes (default 10)"
+    echo "  (ns) nsearch <term>- Search within notes"
+    echo "  (nt) ntasks        - View all incomplete tasks"
+    echo "  (nw) nweek         - Review past week"
+    echo
+    echo " 🏷️"
+    echo "  (nbt) ntags <tag>  - Find notes by tag"
+    echo "  (ntl) ntaglist     - List tag frequency"
+    echo
+    echo " "
     echo "  (nl) npull         - Pull notes from git repository"
+    echo "  (np) npush         - Push notes to git repository"
+    echo
+    echo "❓ (nh) nhelp        - Prints this page"
+    echo "____________________________________________________________________"
     echo
 }
 
@@ -399,3 +419,6 @@ alias nh='notes-help'
 alias ns='nsearch'
 alias np='npush'
 alias nl='npull'
+alias nbt='ntags'
+alias ntl='ntaglist'
+

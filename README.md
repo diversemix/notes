@@ -13,6 +13,10 @@ A kickstart.nvim-based note-taking system with Logseq-like functionality, design
 
 ## Quick Start
 
+NOTE: This assumes you have a working Neovim setup with kickstart.nvim. Adjust paths as needed within the script.
+
+PRE-REQUISITES: bat (batcat), silversearcher (ag)
+
 ```bash
 # 1. Run setup
 chmod +x notes-setup.sh

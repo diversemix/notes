@@ -5,10 +5,16 @@
 NOTES_DIR="$HOME/notes"
 
 # Create directory structure
-mkdir -p "$NOTES_DIR"/{daily,wiki,templates,inbox,archive}
-mkdir -p "$NOTES_DIR/wiki"/{projects,areas,resources}
+mkdir -p "$NOTES_DIR"/{daily,wiki,templates,inbox,archive,incoming,areas}
 
 echo "Created notes directory structure at $NOTES_DIR"
+
+# Create inbox template for quick captures
+cat > "$NOTES_DIR/templates/inbox.md" << 'EOF'
+# Inbox
+<!-- Capture any off-topic intrusive thoughts here to process later -->
+
+EOF
 
 # Create daily note template
 cat > "$NOTES_DIR/templates/daily.md" << 'EOF'
@@ -18,11 +24,12 @@ cat > "$NOTES_DIR/templates/daily.md" << 'EOF'
 ## 🎯 Primary Focus
 <!-- What's the ONE thing that matters most today? -->
 
+## ✅ Today's Tasks
+<!-- Don't for get to check your inbox -->
+- [ ] 
+
 ## 📋 Carried Over
 <!-- Tasks from previous days - automatically populated -->
-
-## ✅ Today's Tasks
-- [ ] 
 
 ## 📝 Notes & Discoveries
 
@@ -43,7 +50,7 @@ EOF
 # Create wiki page template
 cat > "$NOTES_DIR/templates/wiki.md" << 'EOF'
 # {{TITLE}}
-
+<!-- General knowledge, reference material, should be written to be public -->
 ## Overview
 
 ## Details
@@ -51,41 +58,9 @@ cat > "$NOTES_DIR/templates/wiki.md" << 'EOF'
 ## Related
 <!-- Links to related pages -->
 
-## Tasks
-- [ ] 
-
 ---
 Created: {{DATE}}
 Tags: 
-EOF
-
-# Create project template
-cat > "$NOTES_DIR/templates/project.md" << 'EOF'
-# {{TITLE}}
-
-## Status
-**Current Phase:** 
-**Priority:** 
-**Due Date:** 
-
-## Objective
-
-## Next Actions
-- [ ] 
-
-## Context
-<!-- Background, why this matters, key decisions -->
-
-## Resources
-<!-- Links to related wiki pages, documents, etc. -->
-
-## Log
-### {{DATE}}
-
-
----
-Created: {{DATE}}
-Tags: #project
 EOF
 
 
@@ -94,6 +69,7 @@ cat > "$NOTES_DIR/templates/area.md" << 'EOF'
 # {{TITLE}}
 
 ## Purpose
+<!-- Why you care about this area and what the end goal is -->
 
 ## Learning Actions
 - [ ] 
@@ -113,38 +89,6 @@ Created: {{DATE}}
 Tags: #area
 EOF
 
-# Create resource template
-cat > "$NOTES_DIR/templates/resource.md" << 'EOF'
-# {{TITLE}}
-
-## Notes
-
-## Links
-- ()[]
-- ()[]
-- ()[]
-
-## Context
-<!-- Background, why this matters, key decisions -->
-
-## Resources
-<!-- Links to related wiki pages, documents, etc. -->
-
-## Log
-### {{DATE}}
-
-
----
-Created: {{DATE}}
-Tags: #resource
-EOF
-
-# Create inbox template for quick captures
-cat > "$NOTES_DIR/templates/inbox.md" << 'EOF'
-# Inbox
-
-EOF
-
 echo "Created templates"
 
 # Create initial inbox file
@@ -154,38 +98,26 @@ cp "$NOTES_DIR/templates/inbox.md" "$NOTES_DIR/inbox/inbox.md"
 cat > "$NOTES_DIR/README.md" << 'EOF'
 # Notes System
 
+[Complete Documentation](https://diversemixnotes.readthedocs.io/en/latest)
+
 ## Directory Structure
 
+- `inbox/` - Quick capture location for unprocessed thoughts
+- 'incoming/` - Temporary holding for new notes to be sorted
 - `daily/` - Daily notes with tasks and reflections
 - `wiki/` - General knowledge, reference material
-  - `projects/` - Active projects with objectives and tasks
-  - `areas/` - Ongoing areas of responsibility
-  - `resources/` - Reference material, how-tos, docs
-- `inbox/` - Quick capture location for unprocessed thoughts
+- `areas/` - Ongoing areas of responsibility
 - `templates/` - Templates for different note types
 - `archive/` - Completed projects and old notes
 
-## Quick Commands
-
-- `today` - Open today's daily note
-- `yesterday` - Open yesterday's daily note
-- `wiki <name>` - Create or open a wiki page
-- `project <name>` - Create or open a project
-- `inbox` - Quick capture to inbox
-- `nfind` - Search all notes
-- `ntags` - Find notes by tag
-
-## Workflow
-
-1. Start each day with `today` - review carried over tasks
-2. Use `inbox` for quick captures throughout the day
-3. Process inbox items into daily tasks or wiki pages
-4. At end of day, move incomplete tasks to next day using `carry-tasks`
 EOF
 
 echo "Setup complete! Notes directory created at $NOTES_DIR"
 echo ""
 echo "Next steps:"
-echo "1. Add the functions from notes-functions.sh to your ~/.zshrc or ~/.bashrc"
+echo "1. Add the functions from notes-functions.sh to your ~/.zprofile or ~/.bash_profile"
 echo "2. Add the Neovim configuration from notes-nvim.lua to your config"
-echo "3. Run 'source ~/.zshrc' (or ~/.bashrc) to load the functions"
+echo "3. Restart your terminal or source your profile"
+echo
+echo "TIP: You may want to add your notes to git and use git-crypt for encryption!"
+echo 

@@ -47,12 +47,8 @@ M.follow_link = function()
 
 				-- Determine the type based on the path
 				local create_cmd
-				if link:match("^wiki/projects/") then
-					create_cmd = "create-project"
-				elseif link:match("^wiki/areas/") then
+				if link:match("^areas/") then
 					create_cmd = "create-area"
-				elseif link:match("^wiki/resources/") then
-					create_cmd = "create-resource"
 				else
 					-- Default to wiki for simple links or wiki/* links
 					create_cmd = "create-wiki"
@@ -60,7 +56,7 @@ M.follow_link = function()
 
 				-- Call the appropriate bash creation function
 				-- NOTE: Ensure you are sourcing the notes-function.sh in your .bash_profile or .zprofile so that it loads
-				local result = vim.fn.system(string.format("bash -c -l '%s \"%s\"'", create_cmd, name))
+				local result = vim.fn.system(string.format("bash -l -c '%s \"%s\"'", create_cmd, name))
 				-- Use the filepath returned by the bash script (trim whitespace)
 				filepath = result:gsub("%s+$", "")
 			end
@@ -250,7 +246,7 @@ end
 M.open_today = function()
 	-- Call the bash create-today function which creates the file if needed
 	-- and returns the filepath (without opening an editor)
-	local result = vim.fn.system("bash -c 'source ~/.zshrc 2>/dev/null || source ~/.bashrc 2>/dev/null; create-today'")
+	local result = vim.fn.system("bash -l -c 'create-today'")
 	local filepath = result:gsub("%s+$", "") -- trim trailing whitespace/newline
 
 	-- Open the file in the current Neovim instance
@@ -260,8 +256,7 @@ end
 -- Open yesterday's (most recent) daily log (calls bash find-yesterday)
 M.open_yesterday = function()
 	-- Call the bash find-yesterday function to get the most recent daily log
-	local result =
-		vim.fn.system("bash -c 'source ~/.zshrc 2>/dev/null || source ~/.bashrc 2>/dev/null; find-yesterday'")
+	local result = vim.fn.system("bash -l -c 'find-yesterday'")
 	local filepath = result:gsub("%s+$", "") -- trim trailing whitespace/newline
 
 	if filepath == "" then
@@ -331,12 +326,12 @@ M.setup_autocmds = function()
 	-- Optional: Conceal wiki links in normal mode for cleaner look
 	-- Uncomment if you want this feature
 	-- vim.api.nvim_create_autocmd("FileType", {
-	--   group = group,
-	--   pattern = "markdown",
-	--   callback = function()
-	--     vim.opt_local.conceallevel = 2
-	--     vim.opt_local.concealcursor = "nc"
-	--   end,
+	--	 group = group,
+	--	 pattern = "markdown",
+	--	 callback = function()
+	--		 vim.opt_local.conceallevel = 2
+	--		 vim.opt_local.concealcursor = "nc"
+	--	 end,
 	-- })
 
 	-- Better markdown editing settings

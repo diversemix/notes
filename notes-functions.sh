@@ -1,6 +1,6 @@
 #!/bin/bash
 # Notes System Functions
-# Add these to your ~/.zshrc or ~/.bashrc
+# Add these to your ~/.zprofile or ~/.bash_profile to enable notes management functions
 
 export NOTES_DIR="$HOME/notes"
 export BAT_THEME="Catppuccin Mocha"
@@ -12,6 +12,12 @@ npush() {
     git add .
     git commit -m "Notes update: $(date +%Y-%m-%d\ %H:%M)"
     git push
+    popd > /dev/null
+}
+
+npull() {
+    pushd "$NOTES_DIR" > /dev/null
+    git pull
     popd > /dev/null
 }
 
@@ -113,37 +119,6 @@ wiki() {
     nvim "$file"
 }
 
-# Create a project file (without opening editor)
-# This is used by both the bash 'project' function and the Neovim integration
-create-project() {
-    local name="$1"
-    if [ -z "$name" ]; then
-        return 1
-    fi
-
-    local slug=$(echo "$name" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')
-    local file="$NOTES_DIR/wiki/projects/$slug.md"
-
-    if [ ! -f "$file" ]; then
-        local title=$(echo "$name" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
-        local date=$(date +%Y-%m-%d)
-        sed -e "s/{{TITLE}}/$title/g" -e "s/{{DATE}}/$date/g" "$NOTES_DIR/templates/project.md" > "$file"
-    fi
-
-    echo "$file"
-}
-
-project() {
-    local name="$1"
-    if [ -z "$name" ]; then
-        echo "Usage: project <project-name>"
-        return 1
-    fi
-
-    local file=$(create-project "$name")
-    nvim "$file"
-}
-
 # Create an area file (without opening editor)
 # This is used by both the bash 'area' function and the Neovim integration
 create-area() {
@@ -153,7 +128,7 @@ create-area() {
     fi
 
     local slug=$(echo "$name" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')
-    local file="$NOTES_DIR/wiki/areas/$slug.md"
+    local file="$NOTES_DIR/areas/$slug.md"
 
     if [ ! -f "$file" ]; then
         local title=$(echo "$name" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
@@ -175,43 +150,14 @@ area() {
     nvim "$file"
 }
 
-# Create a resource file (without opening editor)
-# This is used by both the bash 'resource' function and the Neovim integration
-create-resource() {
-    local name="$1"
-    if [ -z "$name" ]; then
-        return 1
-    fi
-
-    local slug=$(echo "$name" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')
-    local file="$NOTES_DIR/wiki/resources/$slug.md"
-
-    if [ ! -f "$file" ]; then
-        local title=$(echo "$name" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
-        local date=$(date +%Y-%m-%d)
-        sed -e "s/{{TITLE}}/$title/g" -e "s/{{DATE}}/$date/g" "$NOTES_DIR/templates/resource.md" > "$file"
-    fi
-
-    echo "$file"
-}
-
-resource() {
-    local name="$1"
-    if [ -z "$name" ]; then
-        echo "Usage: resource <resource-name>"
-        return 1
-    fi
-
-    local file=$(create-resource "$name")
-    nvim "$file"
-}
-
+# Note Fast Find
 nff() {
     if [ -z "$1" ]; then
         echo "Usage: nff <search-location>"
         return 1
     fi
-    ag --nobreak --noheading . $1 | \
+    ag --nobreak --noheading --ignore incoming/ --ignore archive/ . $1 | \
+      grep -v ':[[:space:]]*$' | \
       fzf --ansi --delimiter ':' \
           --preview 'bat --color=always {1} --highlight-line {2} ' \
           --preview-window '+{2}/2' | \
@@ -301,8 +247,8 @@ nrecent() {
 
 # View incomplete tasks across all notes
 ntasks() {
-    echo "=== Incomplete Project Tasks ==="
-    grep -r "^- \[ \]" "$NOTES_DIR/wiki/projects/" --include="*.md" -H | sed "s|$NOTES_DIR/||g"
+    echo "=== Incomplete Tasks in Areas ==="
+    grep -r "^- \[ \]" "$NOTES_DIR/areas/" --include="*.md" -H | sed "s|$NOTES_DIR/||g"
 }
 
 # View today's tasks specifically
@@ -428,9 +374,7 @@ notes-help() {
     echo "       yesterday     - Open most recent daily log (handles gaps)"
     echo "       inbox         - Quick capture"
     echo "       wiki <name>   - Create/open wiki page (specific topic)"
-    echo "       project <n>   - Create/open project (time bounded)"
     echo "       area <n>      - Create/open area (time unbounded)"
-    echo "       resource <n>  - Create/open resource (reference material)"
     echo "  (cx) context       - Show today's focus and active tasks"
     echo "  (nt) ntasks        - View all incomplete tasks"
     echo "  (nf) nfind <term>  - Search notes by filename"
@@ -439,6 +383,7 @@ notes-help() {
     echo "  (nw) nweek         - Review past week"
     echo "  (nq) nquick        - Append quick note to today's log"
     echo "  (np) npush         - Push notes to git repository"
+    echo "  (nl) npull         - Pull notes from git repository"
     echo
 }
 
@@ -453,3 +398,4 @@ alias nr='nrecent'
 alias nh='notes-help'
 alias ns='nsearch'
 alias np='npush'
+alias nl='npull'

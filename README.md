@@ -15,7 +15,7 @@ A kickstart.nvim-based note-taking system with Logseq-like functionality, design
 
 NOTE: This assumes you have a working Neovim setup with kickstart.nvim. Adjust paths as needed within the script.
 
-PRE-REQUISITES: bat (batcat), silversearcher (ag)
+PRE-REQUISITES: bat (batcat), ripgrep (rg)
 
 ```bash
 # 1. Run setup

@@ -3,7 +3,7 @@
 # Add these to your ~/.zprofile or ~/.bash_profile to enable notes management functions
 
 export NOTES_DIR="$HOME/notes"
-export BAT_THEME="Catppuccin Mocha"
+export BAT_THEME=TwoDark
 
 # Core daily note functions
 
@@ -153,14 +153,14 @@ area() {
 # Note Fast Find
 nff() {
     if [ -z "$1" ]; then
-        echo "Usage: nff <search-location>"
+        echo "Usage: nff <search-path>"
         return 1
     fi
-    ag --nobreak --noheading --ignore incoming/ --ignore archive/ . $1 | \
+    rg --no-heading --line-number --color=always --glob '!incoming/' --glob '!archive/' "" "$1" | \
       grep -v ':[[:space:]]*$' | \
       fzf --ansi --delimiter ':' \
-          --preview 'bat --color=always {1} --highlight-line {2} ' \
-          --preview-window '+{2}/2' | \
+      --preview 'bat --color=always {1} --highlight-line {2} ' \
+      --preview-window '+{2}/2' | \
       cut -d':' -f1,2 | \
       xargs -I {} sh -c 'nvim +$(echo {} | cut -d: -f2) $(echo {} | cut -d: -f1)'
 }

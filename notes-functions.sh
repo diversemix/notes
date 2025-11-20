@@ -68,7 +68,7 @@ find-yesterday() {
     local today_file="$NOTES_DIR/daily/$today_date.md"
 
     # Find the most recent daily log file (excluding today)
-    local recent_file=$(ls -t "$NOTES_DIR/daily/"*.md 2>/dev/null | grep -v "$today_file" | head -n 1)
+    local recent_file=$(ls -1t "$NOTES_DIR/daily/"*.md 2>/dev/null | sort -nr | grep -v "$today_file" | head -n 1)
 
     if [ -n "$recent_file" ]; then
         echo "$recent_file"

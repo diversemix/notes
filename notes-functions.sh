@@ -8,10 +8,10 @@ export BAT_THEME=TwoDark
 # Core daily note functions
 
 npush() {
-    npull
+    npull || return 1
     pushd "$NOTES_DIR" > /dev/null
     git add .
-    git commit -m "Notes update: $(date +%Y-%m-%d\ %H:%M)"
+    git commit -m "Notes update: $(date +%Y-%m-%d\ %H:%M) from: $(hostname)" || echo "No changes to commit"
     git push
     popd > /dev/null
 }

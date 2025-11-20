@@ -8,6 +8,7 @@ export BAT_THEME=TwoDark
 # Core daily note functions
 
 npush() {
+    npull
     pushd "$NOTES_DIR" > /dev/null
     git add .
     git commit -m "Notes update: $(date +%Y-%m-%d\ %H:%M)"

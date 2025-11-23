@@ -209,10 +209,20 @@ Create `[[links]]` when:
 ### Link Patterns
 
 ```markdown
-Today's note → [[areas/project-name]]     # Link to project
-Wiki page → [[other-wiki-page]]            # Cross-reference
-Area note → [[wiki/pattern-name]]          # Link to knowledge
+# From daily notes
+Today's note → [[projects/my-project]]     # Link to a project
+Today's note → [[areas/backend-dev]]       # Link to an area
+Today's note → [[wiki/restic]]             # Link to knowledge
+
+# From projects/areas
+Project note → [[wiki/deployment-guide]]   # Link to knowledge reference
+Area note → [[wiki/best-practices]]        # Link to knowledge reference
+
+# Between wiki pages
+Wiki page → [[other-wiki-page]]            # Cross-reference knowledge
 ```
+
+**Pattern: Use area notes as hubs.** Area notes map to all relevant information for an ongoing responsibility. See [Example Area as Hub](#example-area-as-hub) below.
 
 ### Backlinks
 
@@ -234,19 +244,49 @@ A concern is a distinct aspect, purpose, or perspective on a topic that can be u
 
 ### Example: Home Data Management
 
-Instead of one large `home-data.md` containing everything:
+Instead of one large file containing everything, separate into focused concerns and create an **area note as a hub** to map them all:
 
+**Separated concerns (wiki pages):**
 ```
-[[wiki/home-data]]            ← CONCERN 1: What exists (inventory)
-[[wiki/network-topology]]     ← CONCERN 2: Where it lives (physical/logical layout)
-[[wiki/backup-strategy]]      ← CONCERN 3: How to protect (approach)
-[[wiki/restic]]               ← CONCERN 4: Tool reference (backup tool)
-[[wiki/rclone]]               ← CONCERN 5: Tool reference (sync tool)
-[[wiki/photo-backup]]         ← CONCERN 6: Special case (photos workflow)
-[[wiki/recovery-process]]     ← CONCERN 7: Procedures (what to do when...)
+[[wiki/home-data-inventory]]       ← CONCERN 1: What exists
+[[wiki/network-topology]]          ← CONCERN 2: Where it lives
+[[wiki/backup-strategy]]           ← CONCERN 3: How to protect
+[[wiki/restic-guide]]              ← CONCERN 4: Tool reference
+[[wiki/rclone-guide]]              ← CONCERN 5: Tool reference
+[[wiki/home-data-photos]]          ← CONCERN 6: Special case
+[[wiki/disaster-recovery-plan]]    ← CONCERN 7: Procedures
 ```
 
-Each page is independently searchable, shareable, and maintainable.
+**Area note as hub** (`area home-backup`):
+```markdown
+# Home Backup
+
+## Current State
+Everything is backed up. Photos need optimization.
+
+## Active Work
+[[projects/backup-system-2025]] - Setting up automated system
+
+## Documentation
+- Strategy: [[wiki/backup-strategy]]
+- What's backed up: [[wiki/home-data-inventory]]
+- Network layout: [[wiki/network-topology]]
+- Photos workflow: [[wiki/home-data-photos]]
+- Recovery: [[wiki/disaster-recovery-plan]]
+
+## Tools
+- [[wiki/restic-guide]]
+- [[wiki/rclone-guide]]
+
+## Next Review
+2025-12-01 - Quarterly backup verification
+
+---
+Created: 2025-01-15
+Tags: #infrastructure #backup
+```
+
+The area note provides a **map** to all related information while each wiki page remains independently searchable and maintainable.
 
 ### How to Identify Separate Concerns
 
@@ -337,6 +377,55 @@ Don't create separate pages for:
 3. **Clearer updates**: Change deployment process without touching inventory
 4. **Natural knowledge graph**: Connections emerge organically
 5. **Reduced cognitive load**: Each page is focused and digestible
+
+### Example Area as Hub
+
+Area notes work best as **maps to related information**. They track the ongoing responsibility and link to all relevant knowledge:
+
+```markdown
+# Backend Development
+
+## Current Focus
+Improving API performance and reliability.
+
+## Active Projects
+- [[projects/api-v2-migration]] - Migrating to REST v2
+- [[projects/database-optimization]] - Query performance improvements
+
+## Standards & Knowledge
+- [[wiki/backend-coding-standards]]
+- [[wiki/api-design-principles]]
+- [[wiki/database-schema]]
+- [[wiki/deployment-process]]
+
+## Tools & Infrastructure
+- [[wiki/kubernetes-setup]]
+- [[wiki/monitoring-stack]]
+- [[wiki/ci-cd-pipeline]]
+
+## Common Tasks
+- [[wiki/deploying-backend-service]]
+- [[wiki/troubleshooting-performance]]
+- [[wiki/database-migrations]]
+
+## Team Resources
+- Team members: [Internal link]
+- Oncall rotation: [Link]
+
+## Next Review
+2025-02-01 - Review active projects and priorities
+
+---
+Created: 2024-01-15
+Tags: #area #backend #development
+```
+
+**Why this works:**
+- Area provides context: "What is this responsibility about?"
+- Links to active projects: "What am I working on right now?"
+- Links to knowledge: "Where do I find information?"
+- Standalone wiki pages remain independently searchable
+- Daily notes link to `[[areas/backend-development]]` for quick access
 
 ## Dealing with Common Challenges
 

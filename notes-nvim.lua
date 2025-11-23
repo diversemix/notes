@@ -376,7 +376,7 @@ M.setup = function(opts)
 	vim.api.nvim_create_user_command("NotesTasks", M.show_tasks, { desc = "Show tasks in current note" })
 	vim.api.nvim_create_user_command("NotesAllTasks", M.show_all_tasks, { desc = "Show all incomplete tasks" })
 
-	print("Notes system loaded. Use <leader>n[f/g/i/t/l/b/n/x/s/a] or :Notes* commands")
+	print("Notes loaded. Use <leader>n... or :Notes* commands")
 end
 
 return M

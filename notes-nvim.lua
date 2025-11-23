@@ -49,6 +49,8 @@ M.follow_link = function()
 				local create_cmd
 				if link:match("^areas/") then
 					create_cmd = "create-area"
+				elseif link:match("^projects/") then
+					create_cmd = "create-project"
 				else
 					-- Default to wiki for simple links or wiki/* links
 					create_cmd = "create-wiki"

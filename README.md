@@ -40,7 +40,9 @@ require('notes').setup()
 ```bash
 today           # Open today's note (auto-carries incomplete tasks)
 context         # Show what you're working on RIGHT NOW
-wiki <name>     # Create/open wiki page
+wiki <name>     # Create/open wiki page (knowledge/reference)
+project <name>  # Create/open project (time-bounded initiative)
+area <name>     # Create/open area (ongoing responsibility)
 nfind [term]    # Search all notes
 ntasks          # Show all incomplete tasks
 ```
@@ -109,13 +111,22 @@ today
 ```
 ~/notes/
 ├── daily/              # Daily notes (YYYY-MM-DD.md)
-├── wiki/               # Wiki pages for topics/references
-├── areas/              # Ongoing responsibilities and projects
+├── wiki/               # Wiki pages for knowledge/reference
+├── projects/           # Time-bounded projects with objectives
+├── areas/              # Ongoing responsibilities (time-unbounded)
 ├── inbox/              # Quick captures
 ├── templates/          # Customizable templates
 ├── archive/            # Old/completed content
 └── incoming/           # Temporary holding area
 ```
+
+### Understanding Projects vs Areas vs Wiki
+
+- **Wiki**: Knowledge, how-tos, references (e.g., `wiki restic`, `wiki bash`)
+- **Projects**: Time-bounded initiatives with end goals (e.g., `project api-v2-migration`)
+- **Areas**: Ongoing responsibilities with no end date (e.g., `area backend-development`)
+
+**Tip**: When organizing wiki pages, use **separation of concerns** - break large topics into focused pages. See the [User Guide](docs/user-guide.md#organizing-by-concerns) for details.
 
 ## Contributing
 

@@ -151,6 +151,41 @@ area() {
     nvim "$file"
 }
 
+# Create a project file (without opening editor)
+# This is used by both the bash 'project' function and the Neovim integration
+create-project() {
+    local name="$1"
+    if [ -z "$name" ]; then
+        return 1
+    fi
+
+    local slug=$(echo "$name" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')
+    local file="$NOTES_DIR/projects/$slug.md"
+
+    # Create projects directory if it doesn't exist
+    mkdir -p "$NOTES_DIR/projects"
+
+    if [ ! -f "$file" ]; then
+        local title=$(echo "$name" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
+        local date=$(date +%Y-%m-%d)
+        sed -e "s/{{TITLE}}/$title/g" -e "s/{{DATE}}/$date/g" "$NOTES_DIR/templates/project.md" > "$file"
+    fi
+
+    echo "$file"
+}
+
+project() {
+    local name="$1"
+    if [ -z "$name" ]; then
+        echo "Usage: project <project-name>"
+        echo "Example: project my-new-app"
+        return 1
+    fi
+
+    local file=$(create-project "$name")
+    nvim "$file"
+}
+
 # Note Fast Find
 nff() {
     if [ -z "$1" ]; then
@@ -348,7 +383,7 @@ inbox() {
     if [ -z "$1" ]; then
         nvim +"normal! GA" +startinsert! "$NOTES_DIR/inbox/inbox.md"
     else
-        echo "$1" >> "$file"
+        echo "$*" >> "$file"
         echo "Note added to inbox"
     fi
 }

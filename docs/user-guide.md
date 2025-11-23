@@ -144,19 +144,37 @@ If a task appears in 3+ daily notes, it needs attention:
 - `wiki python-async-patterns`
 - `wiki meeting-notes-format`
 
-### Areas
+**Separation of Concerns**: Break large topics into separate wiki pages by concern. See [Organizing by Concerns](#organizing-by-concerns) below.
 
-**Use for**: Projects, ongoing responsibilities, things with multiple next actions
+### Projects
+
+**Use for**: Time-bounded initiatives with specific objectives and end states
 
 **Characteristics**:
-- Time-bounded (has an end, even if far away)
-- Requires tracking progress
-- Has multiple steps/next actions
+- Has a clear objective and completion criteria
+- Time-bounded (weeks to months)
+- Multiple next actions that work toward an outcome
+- Active tracking of progress
 
 **Examples**:
-- `area auth-refactor`
+- `project auth-refactor`
+- `project api-v2-migration`
+- `project learning-rust`
+
+### Areas
+
+**Use for**: Ongoing responsibilities with no end date
+
+**Characteristics**:
+- Time-unbounded (ongoing indefinitely)
+- Standards to maintain rather than goals to achieve
+- Continuous attention needed
+- No clear "done" state
+
+**Examples**:
 - `area backend-development`
-- `area learning-rust`
+- `area team-mentoring`
+- `area system-maintenance`
 
 ### Daily Notes
 
@@ -201,6 +219,124 @@ Area note → [[wiki/pattern-name]]          # Link to knowledge
 Use `<leader>nb` in Neovim to see what links to current page.
 
 **Why it matters**: Backlinks reveal connections you might have forgotten.
+
+## Organizing by Concerns
+
+When creating notes, especially wiki pages, break large topics into **separate concerns** rather than creating one massive file. Each concern should address a distinct aspect of the topic.
+
+### What is a "Concern"?
+
+A concern is a distinct aspect, purpose, or perspective on a topic that can be understood independently. Good separation makes each page:
+- **Focused**: Addresses one aspect clearly
+- **Independently useful**: Can be read and understood on its own
+- **Linkable**: Others can reference just what they need
+- **Maintainable**: Updates don't require navigating unrelated content
+
+### Example: Home Data Management
+
+Instead of one large `home-data.md` containing everything:
+
+```
+[[wiki/home-data]]            ← CONCERN 1: What exists (inventory)
+[[wiki/network-topology]]     ← CONCERN 2: Where it lives (physical/logical layout)
+[[wiki/backup-strategy]]      ← CONCERN 3: How to protect (approach)
+[[wiki/restic]]               ← CONCERN 4: Tool reference (backup tool)
+[[wiki/rclone]]               ← CONCERN 5: Tool reference (sync tool)
+[[wiki/photo-backup]]         ← CONCERN 6: Special case (photos workflow)
+[[wiki/recovery-process]]     ← CONCERN 7: Procedures (what to do when...)
+```
+
+Each page is independently searchable, shareable, and maintainable.
+
+### How to Identify Separate Concerns
+
+Ask yourself:
+
+1. **Different audiences?** → Separate pages
+   - Developers need different info than users
+
+2. **Different purposes?** → Separate pages
+   - What vs How vs Why are different concerns
+
+3. **Different timescales?** → Separate pages
+   - Current state vs historical context vs future plans
+
+4. **Different types of information?** → Separate pages
+   - Conceptual vs procedural vs reference
+   - Inventory vs topology vs process
+
+5. **Could someone need just this part?** → Separate page
+   - If yes, make it independently accessible
+
+### Example: Infrastructure Documentation
+
+**Poor organization (one big file):**
+```
+wiki/infrastructure.md
+  - Server inventory
+  - Network diagram
+  - Deployment process
+  - Monitoring setup
+  - Disaster recovery
+  - Tool configs
+  - Troubleshooting
+```
+
+**Good organization (separated concerns):**
+```
+[[wiki/infrastructure]]         ← Overview and links
+[[wiki/server-inventory]]       ← What we have
+[[wiki/network-topology]]       ← How it connects
+[[wiki/deployment-process]]     ← How to deploy
+[[wiki/monitoring-stack]]       ← How we observe
+[[wiki/disaster-recovery]]      ← What to do in crisis
+[[wiki/prometheus]]             ← Tool reference
+[[wiki/troubleshooting-infra]]  ← Common issues
+```
+
+### Connecting Concerns
+
+Use an overview page to link related concerns:
+
+```markdown
+# Infrastructure
+
+Overview of our infrastructure setup.
+
+## What We Have
+- [[server-inventory]] - All servers and their purposes
+- [[network-topology]] - Network layout and connections
+
+## How We Work
+- [[deployment-process]] - How to deploy applications
+- [[monitoring-stack]] - How we track system health
+
+## Emergency Procedures
+- [[disaster-recovery]] - What to do when things break
+- [[troubleshooting-infra]] - Common issues and fixes
+
+## Tools
+- [[prometheus]] - Monitoring tool
+- [[terraform]] - Infrastructure as code
+```
+
+### When NOT to Separate
+
+Don't create separate pages for:
+- Very small amounts of information (< 100 words)
+- Information that's only useful together
+- Concerns that always change together
+- Over-abstraction (don't create pages you'll never revisit)
+
+**Rule of thumb**: If splitting creates more confusion than clarity, keep it together.
+
+### Benefits of Separation
+
+1. **Better search**: Find exactly what you need
+2. **Easier sharing**: Link colleagues to just the relevant part
+3. **Clearer updates**: Change deployment process without touching inventory
+4. **Natural knowledge graph**: Connections emerge organically
+5. **Reduced cognitive load**: Each page is focused and digestible
 
 ## Dealing with Common Challenges
 
